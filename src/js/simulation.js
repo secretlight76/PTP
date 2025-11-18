@@ -140,6 +140,7 @@ class PTPSimulation {
 
     /**
      * Effectue l'élection BMCA pour une version PTP spécifique
+     * PREND EN COMPTE LES DOMAINES: Les horloges ne peuvent communiquer qu'au sein du même domaine
      */
     async runBMCAForVersion(clocks, version) {
         this.log(`╔═══════════════════════════════════════════════════╗`);
@@ -150,98 +151,178 @@ class PTPSimulation {
         this.bmca = new BMCA(version);
 
         this.log(`[INFO] Nombre d'horloges PTPv${version}: ${clocks.length}`);
+
+        // Grouper les horloges par domaine
+        const domainMap = new Map();
+        clocks.forEach(clock => {
+            const domain = clock.domain;
+            if (!domainMap.has(domain)) {
+                domainMap.set(domain, []);
+            }
+            domainMap.get(domain).push(clock);
+        });
+
+        const domains = Array.from(domainMap.keys()).sort((a, b) => a - b);
+        this.log(`[INFO] Domaines détectés: ${domains.join(', ')}`);
         this.log('');
 
-        // Afficher toutes les horloges participantes
+        // Si plusieurs domaines, afficher un avertissement
+        if (domains.length > 1) {
+            this.log('[⚠️  AVERTISSEMENT CRITIQUE] Plusieurs domaines PTP détectés !');
+            this.log('[INFO] Les horloges ne peuvent communiquer qu\'au sein du même domaine.');
+            this.log('[INFO] Une élection sera effectuée pour CHAQUE domaine.');
+            domains.forEach(domain => {
+                const count = domainMap.get(domain).length;
+                this.log(`   • Domaine ${domain}: ${count} horloge(s)`);
+            });
+            this.log('');
+        }
+
+        // Afficher toutes les horloges participantes avec leur domaine
         this.log('HORLOGES PARTICIPANTES (PTPv' + version + '):');
         clocks.forEach(clock => {
+            const domainInfo = `Domain=${clock.domain}`;
             if (version === 2) {
-                this.log(`   • ${clock.id}: P1=${clock.priority1}, Class=${clock.clockClass}, Acc=0x${clock.clockAccuracy.toString(16).toUpperCase()}, Var=${clock.offsetScaledLogVariance}, P2=${clock.priority2}`);
+                this.log(`   • ${clock.id}: ${domainInfo}, P1=${clock.priority1}, Class=${clock.clockClass}, Acc=0x${clock.clockAccuracy.toString(16).toUpperCase()}, Var=${clock.offsetScaledLogVariance}, P2=${clock.priority2}`);
             } else {
-                this.log(`   • ${clock.id}: Stratum=${clock.stratum}, Precision=${clock.precision}, Variance=${clock.variance}`);
+                this.log(`   • ${clock.id}: ${domainInfo}, Stratum=${clock.stratum}, Precision=${clock.precision}, Variance=${clock.variance}`);
             }
         });
         this.log('');
 
-        // Simuler l'envoi de messages Announce
-        this.log('PHASE 1: ENVOI DES MESSAGES ANNOUNCE');
-        this.log('─────────────────────────────────────────────────');
-        await this.sleep(500);
+        // Effectuer une élection pour chaque domaine
+        const domainGMs = new Map();
 
-        for (const clock of clocks) {
-            const announce = new AnnounceMessage(clock);
-            this.log(`[${clock.id}] ➤ Envoie Announce (Domain: ${clock.domain})`);
-            await this.sleep(200);
-        }
-        this.log('');
+        for (const domain of domains) {
+            const domainClocks = domainMap.get(domain);
 
-        // Simuler la réception et la comparaison
-        this.log('PHASE 2: RÉCEPTION ET ANALYSE DES ANNOUNCE');
-        this.log('─────────────────────────────────────────────────');
-        await this.sleep(500);
+            if (domainClocks.length === 1) {
+                this.log(`[INFO] Domaine ${domain}: Une seule horloge, devient automatiquement Grandmaster`);
+                domainGMs.set(domain, domainClocks[0]);
+                continue;
+            }
 
-        // Chaque horloge compare les Announce reçus
-        for (const clock of clocks) {
-            const otherClocks = clocks.filter(c => c.id !== clock.id);
+            this.log(`╭─────────────────────────────────────────────────╮`);
+            this.log(`│  ÉLECTION POUR DOMAINE ${domain}                          │`);
+            this.log(`╰─────────────────────────────────────────────────╯`);
+            this.log('');
 
-            if (otherClocks.length === 0) continue;
+            // Simuler l'envoi de messages Announce (seulement dans ce domaine)
+            this.log('PHASE 1: ENVOI DES MESSAGES ANNOUNCE (Domaine ' + domain + ')');
+            this.log('─────────────────────────────────────────────────');
+            await this.sleep(500);
 
-            this.log(`[${clock.id}] Reçoit ${otherClocks.length} message(s) Announce`);
+            for (const clock of domainClocks) {
+                const announce = new AnnounceMessage(clock);
+                this.log(`[${clock.id}] ➤ Envoie Announce dans Domaine ${domain}`);
+                await this.sleep(200);
+            }
+            this.log('');
 
-            // Compare avec chaque autre horloge
-            for (const other of otherClocks) {
-                const result = this.bmca.compare(other, clock);
+            // Simuler la réception et la comparaison
+            this.log('PHASE 2: RÉCEPTION ET ANALYSE DES ANNOUNCE (Domaine ' + domain + ')');
+            this.log('─────────────────────────────────────────────────');
+            await this.sleep(500);
 
-                if (result === ComparisonResult.A_BETTER) {
-                    this.log(`[${clock.id}] ✓ Announce de "${other.id}" est MEILLEUR`);
-                } else if (result === ComparisonResult.B_BETTER) {
-                    this.log(`[${clock.id}] ✗ Mon Announce est meilleur que "${other.id}"`);
-                } else {
-                    this.log(`[${clock.id}] = Announce de "${other.id}" est ÉGAL`);
+            // Chaque horloge compare les Announce reçus SEULEMENT de son domaine
+            for (const clock of domainClocks) {
+                const otherClocks = domainClocks.filter(c => c.id !== clock.id);
+
+                if (otherClocks.length === 0) continue;
+
+                this.log(`[${clock.id}] Reçoit ${otherClocks.length} message(s) Announce du Domaine ${domain}`);
+
+                // Compare avec chaque autre horloge du même domaine
+                for (const other of otherClocks) {
+                    const result = this.bmca.compare(other, clock);
+
+                    if (result === ComparisonResult.A_BETTER) {
+                        this.log(`[${clock.id}] ✓ Announce de "${other.id}" est MEILLEUR`);
+                    } else if (result === ComparisonResult.B_BETTER) {
+                        this.log(`[${clock.id}] ✗ Mon Announce est meilleur que "${other.id}"`);
+                    } else {
+                        this.log(`[${clock.id}] ≈ Égalité avec "${other.id}"`);
+                    }
                 }
 
+                await this.sleep(200);
+            }
+            this.log('');
+
+            // PHASE 3: Déterminer le Grandmaster du domaine
+            this.log('PHASE 3: DÉTERMINATION DU GRANDMASTER (Domaine ' + domain + ')');
+            this.log('─────────────────────────────────────────────────');
+            await this.sleep(500);
+
+            let grandmaster = domainClocks[0];
+            for (let i = 1; i < domainClocks.length; i++) {
+                const result = this.bmca.compare(domainClocks[i], grandmaster);
+                if (result === ComparisonResult.A_BETTER) {
+                    grandmaster = domainClocks[i];
+                }
+            }
+
+            domainGMs.set(domain, grandmaster);
+
+            this.log(`[RÉSULTAT] Grandmaster du Domaine ${domain}: ${grandmaster.id}`);
+            this.log('');
+
+            // PHASE 4: Mise à jour des états des horloges du domaine
+            this.log('PHASE 4: MISE À JOUR DES ÉTATS (Domaine ' + domain + ')');
+            this.log('─────────────────────────────────────────────────');
+
+            for (const clock of domainClocks) {
+                if (clock.id === grandmaster.id) {
+                    clock.state = ClockState.MASTER;
+                    this.log(`[${clock.id}] ➤ État: MASTER (Grandmaster du Domaine ${domain})`);
+                } else {
+                    clock.state = ClockState.SLAVE;
+                    this.log(`[${clock.id}] ➤ État: SLAVE (Suit ${grandmaster.id})`);
+                }
                 await this.sleep(100);
             }
             this.log('');
         }
 
-        // Élection du Grandmaster
-        this.log('PHASE 3: ÉLECTION DU GRANDMASTER');
-        this.log('─────────────────────────────────────────────────');
-        await this.sleep(500);
+        // Déterminer le Grandmaster global (du domaine avec le plus d'horloges)
+        let globalGM = null;
+        let maxClocks = 0;
+        let preferredDomain = 0; // Domaine 0 est le domaine par défaut PTP
 
-        const grandmaster = this.bmca.electGrandmaster(clocks);
-
-        if (!grandmaster) {
-            this.log('[ERREUR] Impossible d\'élire un Grandmaster !');
-            return null;
-        }
-
-        this.log(`[RÉSULTAT] Le Grandmaster PTPv${version} élu est: ${grandmaster.id}`);
-        this.log('');
-
-        // Mise à jour des états des horloges de cette version
-        this.log('PHASE 4: MISE À JOUR DES ÉTATS');
-        this.log('─────────────────────────────────────────────────');
-        await this.sleep(500);
-
-        for (const clock of clocks) {
-            if (clock.id === grandmaster.id) {
-                clock.setState(ClockState.MASTER);
-                this.log(`[${clock.id}] → État: MASTER`);
-            } else {
-                // Ne devenir slave que si même version que le GM
-                if (clock.version === grandmaster.version) {
-                    clock.setState(ClockState.SLAVE);
-                    clock.masterClock = grandmaster;
-                    this.log(`[${clock.id}] → État: SLAVE (Maître: ${grandmaster.id})`);
+        // Priorité au domaine 0 s'il existe et a au moins une horloge
+        if (domainGMs.has(0)) {
+            globalGM = domainGMs.get(0);
+            preferredDomain = 0;
+            this.log(`[INFO] Grandmaster global: ${globalGM.id} (Domaine ${preferredDomain} - domaine par défaut PTP)`);
+        } else {
+            // Sinon, choisir le domaine avec le plus d'horloges
+            for (const [domain, gm] of domainGMs.entries()) {
+                const clockCount = domainMap.get(domain).length;
+                if (clockCount > maxClocks) {
+                    maxClocks = clockCount;
+                    globalGM = gm;
+                    preferredDomain = domain;
                 }
             }
-            await this.sleep(150);
+            this.log(`[INFO] Grandmaster global: ${globalGM.id} (Domaine ${preferredDomain} - domaine avec le plus d'horloges: ${maxClocks})`);
         }
-        this.log('');
 
-        return grandmaster;
+        // Avertissement si des horloges sont isolées dans d'autres domaines
+        if (domains.length > 1) {
+            this.log('');
+            this.log('[⚠️  AVERTISSEMENT] Horloges isolées détectées:');
+            domains.forEach(domain => {
+                if (domain !== preferredDomain) {
+                    const isolated = domainMap.get(domain);
+                    const gm = domainGMs.get(domain);
+                    this.log(`   • Domaine ${domain}: ${isolated.length} horloge(s) - GM: ${gm.id}`);
+                    this.log(`     Ces horloges ne peuvent PAS synchroniser avec le GM global (${globalGM.id})`);
+                    this.log(`     car elles sont dans un domaine différent !`);
+                }
+            });
+        }
+
+        return globalGM;
     }
 
     /**
