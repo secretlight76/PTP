@@ -273,18 +273,16 @@ class DelayRespMessage {
     }
 }
 
-// Export pour utilisation dans d'autres modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        PTPClock,
-        ClockState,
-        ClockType,
-        TimeSource,
-        AnnounceMessage,
-        SyncMessage,
-        FollowUpMessage,
-        DelayReqMessage,
-        DelayRespMessage,
-        generateClockIdentity
-    };
+// Export for browser use
+if (typeof window !== 'undefined') {
+    window.PTPClock = PTPClock;
+    window.ClockState = ClockState;
+    window.ClockType = ClockType;
+    window.TimeSource = TimeSource;
+    window.AnnounceMessage = AnnounceMessage;
+    window.SyncMessage = SyncMessage;
+    window.FollowUpMessage = FollowUpMessage;
+    window.DelayReqMessage = DelayReqMessage;
+    window.DelayRespMessage = DelayRespMessage;
+    window.generateClockIdentity = generateClockIdentity;
 }

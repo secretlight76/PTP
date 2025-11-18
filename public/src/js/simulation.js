@@ -370,9 +370,7 @@ class PTPSimulation {
     }
 }
 
-// Export pour utilisation dans d'autres modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        PTPSimulation
-    };
+// Export for browser use
+if (typeof window !== 'undefined') {
+    window.PTPSimulation = PTPSimulation;
 }
