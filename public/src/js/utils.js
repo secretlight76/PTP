@@ -383,7 +383,9 @@ Master                                              Slave
     }
 }
 
-// Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { ConfigManager, PerformanceCharts, MathFormulas };
+// Export for browser use
+if (typeof window !== 'undefined') {
+    window.ConfigManager = ConfigManager;
+    window.PerformanceCharts = PerformanceCharts;
+    window.MathFormulas = MathFormulas;
 }

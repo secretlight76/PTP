@@ -351,7 +351,7 @@ const PTPScenarios = {
     }
 };
 
-// Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { PTPScenarios };
+// Export for browser use
+if (typeof window !== 'undefined') {
+    window.PTPScenarios = PTPScenarios;
 }
