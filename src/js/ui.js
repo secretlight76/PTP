@@ -878,41 +878,90 @@ class UIManager {
         const explanationPanel = document.getElementById('explanation-panel');
         explanationPanel.innerHTML = '';
 
-        // Bannière de résultat
+        // Bannière de résultat avec icône et bouton mode pas-à-pas
         const banner = document.createElement('div');
-        banner.className = 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-6 rounded-lg mb-6 shadow-lg text-center';
+        banner.className = 'glass-card p-6 rounded-lg mb-6 shadow-lg breathe';
+        banner.style.background = 'linear-gradient(135deg, var(--color-master), var(--color-warning))';
         banner.innerHTML = `
-            <div class="text-4xl font-bold mb-2">${explanation.winner.id}</div>
-            <div class="text-xl">est le Grandmaster</div>
-            <div class="text-sm mt-3 opacity-90">Vous pouvez maintenant lancer une synchronisation ou réinitialiser les états pour recommencer</div>
+            <div class="text-center text-white">
+                <div class="text-6xl mb-3">${typeof PTPIcons !== 'undefined' ? PTPIcons.grandmaster(true) : '👑'}</div>
+                <div class="text-3xl font-bold mb-2">${explanation.winner.id}</div>
+                <div class="text-xl mb-4">est le Grandmaster</div>
+                <div class="flex gap-3 justify-center mt-4">
+                    <button id="btn-step-by-step" class="px-4 py-2 rounded-lg font-semibold btn-lift smooth-transition"
+                            style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white;">
+                        📚 Voir Pas-à-Pas
+                    </button>
+                    <button onclick="window.richTooltips?.show('bmca', this)" class="px-4 py-2 rounded-lg font-semibold btn-lift smooth-transition"
+                            style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white;">
+                        ❓ C'est quoi le BMCA?
+                    </button>
+                </div>
+            </div>
         `;
         explanationPanel.appendChild(banner);
 
-        // Résumé
-        const summary = document.createElement('p');
-        summary.className = 'mb-6 text-gray-700 leading-relaxed';
-        summary.textContent = explanation.summary;
+        // Attacher l'événement pour le bouton pas-à-pas
+        setTimeout(() => {
+            const btnStepByStep = document.getElementById('btn-step-by-step');
+            if (btnStepByStep) {
+                btnStepByStep.addEventListener('click', () => {
+                    if (typeof BMCAStepper !== 'undefined') {
+                        const stepper = new BMCAStepper(this.simulation, this);
+                        stepper.start();
+                    } else {
+                        alert('Le mode pas-à-pas n\'est pas disponible. Veuillez recharger la page.');
+                    }
+                });
+            }
+        }, 100);
+
+        // Résumé avec style amélioré
+        const summary = document.createElement('div');
+        summary.className = 'mb-6 glass-card p-4 rounded-lg';
+        summary.innerHTML = `
+            <div class="flex items-start gap-3">
+                <div class="text-3xl">📋</div>
+                <div>
+                    <h4 class="font-bold mb-2" style="color: var(--text-primary);">Résumé de l'Élection</h4>
+                    <p class="text-sm" style="color: var(--text-secondary);">${explanation.summary}</p>
+                </div>
+            </div>
+        `;
         explanationPanel.appendChild(summary);
 
-        // Comparaisons détaillées
-        explanation.steps.forEach(step => {
+        // Comparaisons détaillées avec icônes et boutons "Pourquoi?"
+        explanation.steps.forEach((step, stepIndex) => {
             const comparisonDiv = document.createElement('div');
-            comparisonDiv.className = 'mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200';
+            comparisonDiv.className = 'mb-6 glass-card p-4 rounded-lg smooth-transition hover-shadow';
 
-            const compTitle = document.createElement('h3');
-            compTitle.className = 'font-bold text-lg mb-3';
-            compTitle.textContent = `${explanation.winner.id} vs ${step.loser.id}`;
+            // Titre avec icônes VS
+            const compTitle = document.createElement('div');
+            compTitle.className = 'flex items-center justify-between mb-4';
+            compTitle.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">⚔️</span>
+                    <h3 class="font-bold text-lg" style="color: var(--text-primary);">
+                        ${explanation.winner.id} vs ${step.loser.id}
+                    </h3>
+                </div>
+                <button class="px-3 py-1 rounded text-xs font-semibold hover-scale smooth-transition"
+                        style="background: var(--color-info); color: white;"
+                        onclick="window.richTooltips?.show('bmca', this)">
+                    ❓ Pourquoi?
+                </button>
+            `;
             comparisonDiv.appendChild(compTitle);
 
             const table = document.createElement('table');
             table.className = 'w-full text-sm';
             table.innerHTML = `
                 <thead>
-                    <tr class="border-b border-gray-300">
-                        <th class="text-left py-2">Paramètre</th>
-                        <th class="text-center py-2">${explanation.winner.id}</th>
-                        <th class="text-center py-2">${step.loser.id}</th>
-                        <th class="text-left py-2">Résultat</th>
+                    <tr style="border-bottom: 2px solid var(--border-color);">
+                        <th class="text-left py-2" style="color: var(--text-primary);">Critère</th>
+                        <th class="text-center py-2" style="color: var(--text-primary);">${explanation.winner.id}</th>
+                        <th class="text-center py-2" style="color: var(--text-primary);">${step.loser.id}</th>
+                        <th class="text-left py-2" style="color: var(--text-primary);">Résultat</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -920,22 +969,33 @@ class UIManager {
 
             step.comparisonSteps.forEach(compStep => {
                 const row = document.createElement('tr');
-                row.className = 'border-b border-gray-200';
+                row.className = 'border-b';
+                row.style.borderColor = 'var(--border-color)';
 
+                let resultIcon = '';
                 let resultClass = '';
                 if (compStep.result === ComparisonResult.A_BETTER) {
-                    resultClass = 'text-green-600 font-bold';
+                    resultIcon = typeof PTPIcons !== 'undefined' ? PTPIcons.check() : '✓';
+                    resultClass = 'font-bold';
+                    row.style.color = 'var(--color-success)';
                 } else if (compStep.result === ComparisonResult.B_BETTER) {
-                    resultClass = 'text-red-600 font-bold';
+                    resultIcon = typeof PTPIcons !== 'undefined' ? PTPIcons.cross() : '✗';
+                    resultClass = 'font-bold';
+                    row.style.color = 'var(--color-error)';
                 } else {
-                    resultClass = 'text-gray-500';
+                    resultIcon = '=';
+                    row.style.color = 'var(--text-tertiary)';
                 }
 
                 row.innerHTML = `
-                    <td class="py-2 font-medium">${compStep.parameter}</td>
-                    <td class="py-2 text-center">${compStep.valueA}</td>
-                    <td class="py-2 text-center">${compStep.valueB}</td>
-                    <td class="py-2 ${resultClass}">${compStep.explanation}</td>
+                    <td class="py-2 font-medium" style="color: var(--text-primary);">
+                        ${compStep.parameter}
+                    </td>
+                    <td class="py-2 text-center" style="color: var(--text-secondary);">${compStep.valueA}</td>
+                    <td class="py-2 text-center" style="color: var(--text-secondary);">${compStep.valueB}</td>
+                    <td class="py-2 ${resultClass}">
+                        ${resultIcon} ${compStep.explanation}
+                    </td>
                 `;
                 table.querySelector('tbody').appendChild(row);
             });
@@ -943,6 +1003,30 @@ class UIManager {
             comparisonDiv.appendChild(table);
             explanationPanel.appendChild(comparisonDiv);
         });
+
+        // Bouton pour revoir en mode pas-à-pas
+        const reviewButton = document.createElement('div');
+        reviewButton.className = 'mt-6 text-center';
+        reviewButton.innerHTML = `
+            <button id="btn-review-step-by-step" class="px-6 py-3 rounded-lg font-bold btn-lift smooth-transition"
+                    style="background: var(--color-primary); color: white;">
+                🎓 Revoir l'Élection Pas-à-Pas
+            </button>
+        `;
+        explanationPanel.appendChild(reviewButton);
+
+        // Attacher l'événement
+        setTimeout(() => {
+            const btnReview = document.getElementById('btn-review-step-by-step');
+            if (btnReview) {
+                btnReview.addEventListener('click', () => {
+                    if (typeof BMCAStepper !== 'undefined') {
+                        const stepper = new BMCAStepper(this.simulation, this);
+                        stepper.start();
+                    }
+                });
+            }
+        }, 100);
     }
 
     /**
