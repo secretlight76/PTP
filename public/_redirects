@@ -1,4 +1,5 @@
 # Redirections pour Cloudflare Pages
 
-# Rediriger toutes les 404 vers la page principale (SPA behavior)
-/* /index.html 200
+# Note: Pour une application statique simple, Cloudflare Pages
+# sert automatiquement index.html à la racine.
+# Pas besoin de règles de redirection qui pourraient créer des boucles infinies.

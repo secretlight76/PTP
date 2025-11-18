@@ -13,8 +13,8 @@ Cette application permet de :
 ## 🚀 Déploiement sur Cloudflare Pages
 
 ### Prérequis
-- Node.js >= 18.0.0
-- npm >= 9.0.0
+- Node.js >= 20.0.0 (LTS recommandée : 20.18.0)
+- npm >= 10.0.0
 - Compte Cloudflare
 
 ### Installation

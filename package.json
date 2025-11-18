@@ -20,10 +20,10 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "wrangler": "^3.78.0"
+    "wrangler": "^4.47.0"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
   }
 }
