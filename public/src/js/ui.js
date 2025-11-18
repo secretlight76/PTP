@@ -99,21 +99,23 @@ class UIManager {
 
         const card = document.createElement('div');
         card.id = `clock-card-${clock.id}`;
-        card.className = 'clock-card bg-white rounded-lg shadow-md p-4 cursor-pointer border-2 border-transparent hover:border-blue-400 transition-all';
+        card.className = 'clock-card bg-white rounded-lg shadow-md p-4 cursor-pointer border-2 transition-all';
+        card.style.borderColor = 'transparent';
         card.onclick = () => this.selectClock(clock);
 
         card.innerHTML = `
             <div class="flex items-center justify-between mb-2">
-                <h3 class="font-bold text-lg">${this.getClockIcon(clock)} ${clock.id}</h3>
-                <button class="btn-remove-clock text-red-500 hover:text-red-700 text-xl font-bold"
+                <h3 class="font-bold text-lg" style="color: var(--text-primary);">${this.getClockIcon(clock)} ${clock.id}</h3>
+                <button class="btn-remove-clock text-xl font-bold"
+                        style="color: var(--color-error);"
                         data-clock-id="${clock.id}">
                     ×
                 </button>
             </div>
-            <div class="text-sm text-gray-600">
+            <div class="text-sm" style="color: var(--text-secondary);">
                 <div>Type: <span class="font-semibold">${this.formatClockType(clock.type)}</span></div>
                 <div>Version: <span class="font-semibold">PTPv${clock.version}</span></div>
-                <div>État: <span id="clock-state-${clock.id}" class="font-semibold ${this.getStateColor(clock.state)}">${clock.state}</span></div>
+                <div>État: <span id="clock-state-${clock.id}" class="font-semibold" style="${this.getStateColor(clock.state)}">${clock.state}</span></div>
             </div>
         `;
 
@@ -135,14 +137,14 @@ class UIManager {
 
         // Mettre en surbrillance la carte sélectionnée
         document.querySelectorAll('.clock-card').forEach(card => {
-            card.classList.remove('border-blue-600', 'bg-blue-50');
-            card.classList.add('border-transparent');
+            card.style.borderColor = 'transparent';
+            card.style.backgroundColor = '';
         });
 
         const selectedCard = document.getElementById(`clock-card-${clock.id}`);
         if (selectedCard) {
-            selectedCard.classList.remove('border-transparent');
-            selectedCard.classList.add('border-blue-600', 'bg-blue-50');
+            selectedCard.style.borderColor = 'var(--color-primary)';
+            selectedCard.style.backgroundColor = 'var(--bg-tertiary)';
         }
 
         // Afficher le panneau de configuration
@@ -466,17 +468,21 @@ class UIManager {
         const stateElement = card.querySelector(`#${stateId}`);
         if (stateElement) {
             stateElement.textContent = clock.state;
-            stateElement.className = `font-semibold ${this.getStateColor(clock.state)}`;
+            stateElement.className = 'font-semibold';
+            stateElement.style = this.getStateColor(clock.state);
         }
 
         // Mettre en évidence la carte du Grandmaster
         if (clock.state === ClockState.MASTER) {
-            card.classList.remove('border-transparent', 'border-blue-600');
-            card.classList.add('border-yellow-500', 'bg-yellow-50', 'shadow-xl');
+            card.style.borderColor = 'var(--color-master)';
+            card.style.backgroundColor = 'var(--bg-tertiary)';
+            card.classList.add('shadow-xl');
         } else {
-            card.classList.remove('border-yellow-500', 'bg-yellow-50', 'shadow-xl');
-            if (!card.classList.contains('border-blue-600')) {
-                card.classList.add('border-transparent');
+            card.classList.remove('shadow-xl');
+            const isSelected = this.selectedClock && this.selectedClock.id === clock.id;
+            if (!isSelected) {
+                card.style.borderColor = 'transparent';
+                card.style.backgroundColor = '';
             }
         }
     }
@@ -843,15 +849,15 @@ class UIManager {
 
     getStateColor(state) {
         const colors = {
-            [ClockState.INITIALIZING]: 'text-gray-500',
-            [ClockState.DISABLED]: 'text-gray-400',
-            [ClockState.MASTER]: 'text-yellow-600',
-            [ClockState.SLAVE]: 'text-blue-600',
-            [ClockState.PASSIVE]: 'text-purple-600',
-            [ClockState.LISTENING]: 'text-green-600',
-            [ClockState.FAULTY]: 'text-red-600'
+            [ClockState.INITIALIZING]: 'color: var(--text-tertiary);',
+            [ClockState.DISABLED]: 'color: var(--color-disabled);',
+            [ClockState.MASTER]: 'color: var(--color-master);',
+            [ClockState.SLAVE]: 'color: var(--color-slave);',
+            [ClockState.PASSIVE]: 'color: var(--color-passive);',
+            [ClockState.LISTENING]: 'color: var(--color-success);',
+            [ClockState.FAULTY]: 'color: var(--color-error);'
         };
-        return colors[state] || 'text-gray-600';
+        return colors[state] || 'color: var(--text-secondary);';
     }
 }
 
