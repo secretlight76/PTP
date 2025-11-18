@@ -12,8 +12,12 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+
     <!-- Styles personnalisés -->
     <link rel="stylesheet" href="src/css/styles.css">
+    <link rel="stylesheet" href="src/css/animations.css">
 
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%234F46E5'/><circle cx='50' cy='50' r='25' fill='white'/></svg>">
@@ -83,7 +87,7 @@
         </div>
 
         <!-- Visual Network Topology Panel -->
-        <div class="mb-6 rounded-lg shadow-lg p-6 panel">
+        <div class="mb-6 rounded-lg shadow-lg p-6 panel glass-panel smooth-transition">
             <h2 class="text-2xl font-bold mb-4 pb-2" style="color: var(--text-primary); border-bottom: 2px solid var(--color-primary);">
                 Topologie Réseau Visuelle
             </h2>
@@ -94,7 +98,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
             <!-- ========== COLONNE 1 : Configuration des Horloges ========== -->
-            <div class="rounded-lg shadow-lg p-6 panel">
+            <div class="rounded-lg shadow-lg p-6 panel glass-panel smooth-transition">
                 <h2 class="text-2xl font-bold mb-4 pb-2" style="color: var(--text-primary); border-bottom: 2px solid var(--color-passive);">
                     Configuration
                 </h2>
@@ -108,7 +112,7 @@
             </div>
 
             <!-- ========== COLONNE 2 : Topologie Réseau ========== -->
-            <div class="rounded-lg shadow-lg p-6 panel">
+            <div class="rounded-lg shadow-lg p-6 panel glass-panel smooth-transition">
                 <h2 class="text-2xl font-bold mb-4 pb-2" style="color: var(--text-primary); border-bottom: 2px solid var(--color-primary);">
                     Topologie Réseau
                 </h2>
@@ -165,7 +169,7 @@
             </div>
 
             <!-- ========== COLONNE 3 : Contrôles & Logs ========== -->
-            <div class="rounded-lg shadow-lg p-6 panel">
+            <div class="rounded-lg shadow-lg p-6 panel glass-panel smooth-transition">
                 <h2 class="text-2xl font-bold mb-4 pb-2" style="color: var(--text-primary); border-bottom: 2px solid var(--color-success);">
                     Simulation & Logs
                 </h2>
@@ -243,7 +247,7 @@
         <!-- Performance Charts and Math Formulas -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
             <!-- Performance Charts -->
-            <div class="rounded-lg shadow-lg p-6 panel">
+            <div class="rounded-lg shadow-lg p-6 panel glass-panel smooth-transition">
                 <h2 class="text-2xl font-bold mb-4 pb-2" style="color: var(--text-primary); border-bottom: 2px solid var(--color-success);">
                     Graphiques de Performance
                 </h2>
@@ -255,7 +259,7 @@
             </div>
 
             <!-- Math Formulas -->
-            <div class="rounded-lg shadow-lg p-6 panel">
+            <div class="rounded-lg shadow-lg p-6 panel glass-panel smooth-transition">
                 <h2 class="text-2xl font-bold mb-4 pb-2" style="color: var(--text-primary); border-bottom: 2px solid var(--color-info);">
                     Formules Mathématiques
                 </h2>
@@ -268,7 +272,7 @@
         </div>
 
         <!-- Section pédagogique -->
-        <div class="mt-8 rounded-lg shadow-lg p-6 panel" style="border: 1px solid var(--border-color);">
+        <div class="mt-8 rounded-lg shadow-lg p-6 panel glass-panel smooth-transition" style="border: 1px solid var(--border-color);">
             <h2 class="text-2xl font-bold mb-4" style="color: var(--text-primary);">À Propos du PTP et du BMCA</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -333,6 +337,8 @@
     <script src="src/js/bmca.js"></script>
     <script src="src/js/simulation.js"></script>
     <script src="src/js/scenarios.js"></script>
+    <script src="src/js/icons.js"></script>
+    <script src="src/js/confetti.js"></script>
     <script src="src/js/topology.js"></script>
     <script src="src/js/tutorial.js"></script>
     <script src="src/js/utils.js"></script>
