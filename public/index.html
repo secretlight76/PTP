@@ -93,92 +93,7 @@
         <!-- Grille à 3 colonnes -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <!-- ========== PANNEAU 1 : Atelier de Topologie ========== -->
-            <div class="rounded-lg shadow-lg p-6 panel">
-                <h2 class="text-2xl font-bold mb-4 pb-2" style="color: var(--text-primary); border-bottom: 2px solid var(--color-primary);">
-                    Atelier de Topologie
-                </h2>
-
-                <!-- Boutons d'ajout -->
-                <div class="space-y-3 mb-6">
-                    <button id="btn-add-oc"
-                            class="w-full text-white font-semibold py-3 px-4 rounded-lg transition-all"
-                            style="background-color: var(--color-slave);">
-                        Ajouter une Horloge (OC)
-                    </button>
-
-                    <button id="btn-add-gm-gps"
-                            class="w-full text-white font-semibold py-3 px-4 rounded-lg transition-all"
-                            style="background-color: var(--color-success);">
-                        Ajouter Master Clock GPS
-                    </button>
-
-                    <button id="btn-add-gm-atomic"
-                            class="w-full text-white font-semibold py-3 px-4 rounded-lg transition-all"
-                            style="background-color: var(--color-success);">
-                        Ajouter Master Clock Atomique
-                    </button>
-
-                    <button id="btn-add-bc"
-                            class="w-full text-white font-semibold py-3 px-4 rounded-lg transition-all"
-                            style="background-color: var(--color-passive);">
-                        Ajouter un Switch (BC)
-                    </button>
-
-                    <button id="btn-add-tc-p2p"
-                            class="w-full text-white font-semibold py-3 px-4 rounded-lg transition-all"
-                            style="background-color: var(--color-info);">
-                        Ajouter un Switch (TC P2P)
-                    </button>
-
-                    <button id="btn-add-tc-e2e"
-                            class="w-full text-white font-semibold py-3 px-4 rounded-lg transition-all"
-                            style="background-color: var(--color-info);">
-                        Ajouter un Switch (TC E2E)
-                    </button>
-                </div>
-
-                <div class="pt-4 mb-4" style="border-top: 2px solid var(--border-color);">
-                    <h3 class="font-bold mb-3" style="color: var(--text-primary);">Horloges dans la Topologie</h3>
-
-                    <!-- Zone de visualisation des horloges -->
-                    <div id="topology-container" class="space-y-3 min-h-[200px] max-h-[400px] overflow-y-auto pr-2">
-                        <!-- Les cartes d'horloges seront ajoutées ici dynamiquement -->
-                        <p class="text-center mt-8 text-sm" style="color: var(--text-muted);">Aucune horloge. Ajoutez-en une ci-dessus !</p>
-                    </div>
-                </div>
-
-                <!-- Contrôles de simulation -->
-                <div class="pt-4 space-y-3" style="border-top: 2px solid var(--border-color);">
-                    <h3 class="font-bold mb-3" style="color: var(--text-primary);">Contrôles de Simulation</h3>
-
-                    <button id="btn-run-bmca"
-                            class="w-full text-white font-bold py-3 px-4 rounded-lg transition-all shadow-md"
-                            style="background-color: var(--color-master);">
-                        Lancer l'Élection BMCA
-                    </button>
-
-                    <button id="btn-run-sync"
-                            class="w-full text-white font-bold py-3 px-4 rounded-lg transition-all"
-                            style="background-color: var(--color-passive);">
-                        Simuler la Synchronisation
-                    </button>
-
-                    <button id="btn-reset-states"
-                            class="w-full text-white font-bold py-3 px-4 rounded-lg transition-all"
-                            style="background-color: var(--color-warning);">
-                        Réinitialiser les États
-                    </button>
-
-                    <button id="btn-reset"
-                            class="w-full text-white font-bold py-3 px-4 rounded-lg transition-all"
-                            style="background-color: var(--color-error);">
-                        Réinitialiser la Topologie
-                    </button>
-                </div>
-            </div>
-
-            <!-- ========== PANNEAU 2 : Panneau de Configuration ========== -->
+            <!-- ========== COLONNE 1 : Configuration des Horloges ========== -->
             <div class="rounded-lg shadow-lg p-6 panel">
                 <h2 class="text-2xl font-bold mb-4 pb-2" style="color: var(--text-primary); border-bottom: 2px solid var(--color-passive);">
                     Configuration
@@ -192,38 +107,133 @@
                 </div>
             </div>
 
-            <!-- ========== PANNEAU 3 : Visualisateur BMCA & Log ========== -->
+            <!-- ========== COLONNE 2 : Topologie Réseau ========== -->
             <div class="rounded-lg shadow-lg p-6 panel">
-                <h2 class="text-2xl font-bold mb-4 pb-2" style="color: var(--text-primary); border-bottom: 2px solid var(--color-success);">
-                    Visualisation &amp; Résultats
+                <h2 class="text-2xl font-bold mb-4 pb-2" style="color: var(--text-primary); border-bottom: 2px solid var(--color-primary);">
+                    Topologie Réseau
                 </h2>
 
-                <!-- Onglets -->
-                <div class="mb-4" style="border-bottom: 1px solid var(--border-color);">
-                    <nav class="flex space-x-4">
-                        <button id="tab-logs"
-                                class="tab-button px-4 py-2 font-semibold border-b-2 transition-all"
-                                style="color: var(--color-success); border-bottom-color: var(--color-success);">
-                            Logs de Simulation
-                        </button>
-                        <button id="tab-explanation"
-                                class="tab-button px-4 py-2 font-semibold transition-all"
-                                style="color: var(--text-tertiary);">
-                            Explication BMCA
-                        </button>
-                    </nav>
+                <!-- Boutons d'ajout compacts -->
+                <div class="grid grid-cols-2 gap-2 mb-4">
+                    <button id="btn-add-oc"
+                            class="text-white font-semibold py-2 px-3 rounded text-sm transition-all"
+                            style="background-color: var(--color-slave);">
+                        + OC
+                    </button>
+
+                    <button id="btn-add-gm-gps"
+                            class="text-white font-semibold py-2 px-3 rounded text-sm transition-all"
+                            style="background-color: var(--color-success);">
+                        + GM GPS
+                    </button>
+
+                    <button id="btn-add-gm-atomic"
+                            class="text-white font-semibold py-2 px-3 rounded text-sm transition-all"
+                            style="background-color: var(--color-success);">
+                        + GM Atomic
+                    </button>
+
+                    <button id="btn-add-bc"
+                            class="text-white font-semibold py-2 px-3 rounded text-sm transition-all"
+                            style="background-color: var(--color-passive);">
+                        + BC
+                    </button>
+
+                    <button id="btn-add-tc-p2p"
+                            class="text-white font-semibold py-2 px-3 rounded text-sm transition-all"
+                            style="background-color: var(--color-info);">
+                        + TC P2P
+                    </button>
+
+                    <button id="btn-add-tc-e2e"
+                            class="text-white font-semibold py-2 px-3 rounded text-sm transition-all"
+                            style="background-color: var(--color-info);">
+                        + TC E2E
+                    </button>
                 </div>
 
-                <!-- Contenu des onglets -->
-                <div id="tab-content">
-                    <!-- Log Panel -->
-                    <div id="log-panel" class="rounded-lg p-4 font-mono text-sm overflow-y-auto max-h-[600px]" style="border: 1px solid var(--border-color);">
-                        <p class="text-center" style="color: var(--text-muted);">Les logs de simulation apparaîtront ici...</p>
+                <!-- Liste des horloges compacte -->
+                <div class="pt-2" style="border-top: 2px solid var(--border-color);">
+                    <h3 class="font-bold mb-2 text-sm" style="color: var(--text-primary);">Devices (<span id="device-count">0</span>)</h3>
+
+                    <!-- Zone de visualisation des horloges compacte -->
+                    <div id="topology-container" class="space-y-1 min-h-[200px] max-h-[600px] overflow-y-auto pr-2">
+                        <!-- Les cartes d'horloges seront ajoutées ici dynamiquement -->
+                        <p class="text-center mt-8 text-xs" style="color: var(--text-muted);">Aucune horloge</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== COLONNE 3 : Contrôles & Logs ========== -->
+            <div class="rounded-lg shadow-lg p-6 panel">
+                <h2 class="text-2xl font-bold mb-4 pb-2" style="color: var(--text-primary); border-bottom: 2px solid var(--color-success);">
+                    Simulation & Logs
+                </h2>
+
+                <!-- Contrôles de simulation -->
+                <div class="space-y-2 mb-4">
+                    <button id="btn-run-bmca"
+                            class="w-full text-white font-bold py-2 px-3 rounded-lg transition-all shadow-md text-sm"
+                            style="background-color: var(--color-master);">
+                        ▶ Lancer BMCA
+                    </button>
+
+                    <button id="btn-run-sync"
+                            class="w-full text-white font-semibold py-2 px-3 rounded-lg transition-all text-sm"
+                            style="background-color: var(--color-passive);">
+                        🔄 Synchronisation
+                    </button>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btn-reset-states"
+                                class="text-white font-semibold py-2 px-2 rounded transition-all text-xs"
+                                style="background-color: var(--color-warning);">
+                            ⟲ États
+                        </button>
+
+                        <button id="btn-reset"
+                                class="text-white font-semibold py-2 px-2 rounded transition-all text-xs"
+                                style="background-color: var(--color-error);">
+                            ✕ Topologie
+                        </button>
                     </div>
 
-                    <!-- Explanation Panel (caché par défaut) -->
-                    <div id="explanation-panel" class="hidden rounded-lg p-4 overflow-y-auto max-h-[600px]" style="border: 1px solid var(--border-color);">
-                        <p class="text-center" style="color: var(--text-muted);">L'explication de l'élection apparaîtra après la simulation BMCA...</p>
+                    <button id="btn-save-config"
+                            class="w-full text-white font-semibold py-2 px-3 rounded-lg transition-all text-sm"
+                            style="background-color: var(--color-info);">
+                        💾 Sauvegarder Config
+                    </button>
+                </div>
+
+                <!-- Logs & Résultats -->
+                <div class="pt-2" style="border-top: 2px solid var(--border-color);">
+                    <!-- Onglets -->
+                    <div class="mb-2" style="border-bottom: 1px solid var(--border-color);">
+                        <nav class="flex space-x-4">
+                            <button id="tab-logs"
+                                    class="tab-button px-3 py-1 font-semibold border-b-2 transition-all text-sm"
+                                    style="color: var(--color-success); border-bottom-color: var(--color-success);">
+                                📋 Logs
+                            </button>
+                            <button id="tab-explanation"
+                                    class="tab-button px-3 py-1 font-semibold transition-all text-sm"
+                                    style="color: var(--text-tertiary);">
+                                📖 Explication
+                            </button>
+                        </nav>
+                    </div>
+
+                    <!-- Contenu des onglets -->
+                    <div id="tab-content">
+                        <!-- Log Panel -->
+                        <div id="log-panel" class="rounded p-2 font-mono text-xs overflow-y-auto max-h-[500px]" style="border: 1px solid var(--border-color);">
+                            <p class="text-center text-xs" style="color: var(--text-muted);">Les logs de simulation apparaîtront ici...</p>
+                        </div>
+
+                        <!-- Explanation Panel (caché par défaut) -->
+                        <div id="explanation-panel" class="hidden rounded p-2 overflow-y-auto max-h-[500px]" style="border: 1px solid var(--border-color);">
+                            <p class="text-center text-xs" style="color: var(--text-muted);">L'explication de l'élection apparaîtra après la simulation BMCA...</p>
+                        </div>
                     </div>
                 </div>
             </div>
