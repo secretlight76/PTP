@@ -5,9 +5,11 @@
   "main": "index.html",
   "scripts": {
     "dev": "npx wrangler pages dev public --port 8080",
-    "deploy": "npx wrangler pages deploy public",
-    "build": "echo 'No build step required - static files ready'",
-    "preview": "npx wrangler pages dev public"
+    "build": "node scripts/build.js",
+    "deploy": "npm run build && npx wrangler pages deploy dist --branch=claude/ptp-simulator-app-01JQmZUm3g1Jy8tSJiv6DCCb",
+    "deploy:production": "npm run build && npx wrangler pages deploy dist --branch=claude/ptp-simulator-app-01JQmZUm3g1Jy8tSJiv6DCCb --commit-dirty=true",
+    "preview": "npx wrangler pages dev public",
+    "clean": "rm -rf dist"
   },
   "keywords": [
     "PTP",
