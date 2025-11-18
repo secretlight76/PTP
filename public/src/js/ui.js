@@ -460,7 +460,25 @@ class UIManager {
         if (!card) return;
 
         card.querySelector('h3').innerHTML = `${this.getClockIcon(clock)} ${clock.id}`;
-        card.querySelector(`#clock-state-${clock.id.replace(/[^a-zA-Z0-9-]/g, '_')}`).textContent = clock.state;
+
+        // Récupérer l'élément de l'état
+        const stateId = `clock-state-${clock.id.replace(/[^a-zA-Z0-9-]/g, '_')}`;
+        const stateElement = card.querySelector(`#${stateId}`);
+        if (stateElement) {
+            stateElement.textContent = clock.state;
+            stateElement.className = `font-semibold ${this.getStateColor(clock.state)}`;
+        }
+
+        // Mettre en évidence la carte du Grandmaster
+        if (clock.state === ClockState.MASTER) {
+            card.classList.remove('border-transparent', 'border-blue-600');
+            card.classList.add('border-yellow-500', 'bg-yellow-50', 'shadow-xl');
+        } else {
+            card.classList.remove('border-yellow-500', 'bg-yellow-50', 'shadow-xl');
+            if (!card.classList.contains('border-blue-600')) {
+                card.classList.add('border-transparent');
+            }
+        }
     }
 
     /**
@@ -495,22 +513,30 @@ class UIManager {
         const logPanel = document.getElementById('log-panel');
         logPanel.innerHTML = '';
 
-        // Lancer l'élection
-        const gm = await this.simulation.runBMCAElection();
+        try {
+            // Lancer l'élection
+            const gm = await this.simulation.runBMCAElection();
 
-        // Afficher les logs
-        this.renderLogs();
+            // Afficher les logs
+            this.renderLogs();
 
-        // Mettre à jour les états des cartes
-        this.simulation.clocks.forEach(clock => this.updateClockCard(clock));
+            // Mettre à jour les états des cartes
+            this.simulation.clocks.forEach(clock => this.updateClockCard(clock));
 
-        // Afficher l'explication
-        if (gm) {
-            this.renderElectionExplanation();
+            // Afficher l'explication
+            if (gm) {
+                this.renderElectionExplanation();
+
+                // Afficher une notification claire du résultat (5 secondes)
+                this.showNotification(`GRANDMASTER ÉLU : ${gm.id}`, 'success', 5000);
+            }
+        } catch (error) {
+            console.error('Erreur lors de la simulation BMCA:', error);
+            this.showNotification('Erreur lors de la simulation', 'error');
+        } finally {
+            // Toujours réactiver les boutons, même en cas d'erreur
+            this.setButtonsEnabled(true);
         }
-
-        // Réactiver les boutons
-        this.setButtonsEnabled(true);
     }
 
     /**
@@ -596,10 +622,12 @@ class UIManager {
             // Colorer selon le type de message
             if (log.includes('[ERREUR]')) {
                 logLine.className += ' text-red-600 font-bold';
+            } else if (log.includes('[RÉSULTAT]')) {
+                logLine.className += ' text-green-700 font-bold text-lg bg-green-50 p-2 rounded';
             } else if (log.includes('GRANDMASTER')) {
                 logLine.className += ' text-yellow-600 font-bold';
-            } else if (log.includes('[RÉSULTAT]')) {
-                logLine.className += ' text-green-600 font-bold';
+            } else if (log.includes('ÉLECTION TERMINÉE')) {
+                logLine.className += ' text-green-700 font-bold';
             } else if (log.includes('═══')) {
                 logLine.className += ' text-blue-700 font-bold';
             } else if (log.includes('───')) {
@@ -625,11 +653,15 @@ class UIManager {
         const explanationPanel = document.getElementById('explanation-panel');
         explanationPanel.innerHTML = '';
 
-        // Titre
-        const title = document.createElement('h2');
-        title.className = 'text-2xl font-bold mb-4 text-yellow-600';
-        title.innerHTML = `${explanation.winner.id} est le Grandmaster !`;
-        explanationPanel.appendChild(title);
+        // Bannière de résultat
+        const banner = document.createElement('div');
+        banner.className = 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-6 rounded-lg mb-6 shadow-lg text-center';
+        banner.innerHTML = `
+            <div class="text-4xl font-bold mb-2">${explanation.winner.id}</div>
+            <div class="text-xl">est le Grandmaster</div>
+            <div class="text-sm mt-3 opacity-90">Vous pouvez maintenant lancer une synchronisation ou réinitialiser les états pour recommencer</div>
+        `;
+        explanationPanel.appendChild(banner);
 
         // Résumé
         const summary = document.createElement('p');
@@ -713,20 +745,27 @@ class UIManager {
     /**
      * Affiche une notification temporaire
      */
-    showNotification(message, type = 'info') {
+    showNotification(message, type = 'info', duration = 3000) {
         const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity ${
-            type === 'success' ? 'bg-green-500 text-white' :
-            type === 'error' ? 'bg-red-500 text-white' :
+        notification.className = `fixed top-4 right-4 px-6 py-4 rounded-lg shadow-2xl z-50 transition-opacity ${
+            type === 'success' ? 'bg-green-600 text-white font-bold text-lg' :
+            type === 'error' ? 'bg-red-600 text-white font-bold' :
             'bg-blue-500 text-white'
         }`;
+        notification.style.opacity = '0';
         notification.textContent = message;
         document.body.appendChild(notification);
 
+        // Fade in
+        setTimeout(() => {
+            notification.style.opacity = '1';
+        }, 10);
+
+        // Fade out
         setTimeout(() => {
             notification.style.opacity = '0';
             setTimeout(() => notification.remove(), 300);
-        }, 3000);
+        }, duration);
     }
 
     // ===== Fonctions utilitaires pour créer des éléments UI =====
