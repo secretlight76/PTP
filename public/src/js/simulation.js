@@ -80,7 +80,7 @@ class PTPSimulation {
 
     /**
      * Lance la simulation BMCA
-     * Retourne le Grandmaster élu
+     * Retourne le Grandmaster élu (ou un objet avec v1GM et v2GM si les deux versions existent)
      */
     async runBMCAElection() {
         if (this.clocks.length === 0) {
@@ -96,18 +96,66 @@ class PTPSimulation {
         this.log('═══════════════════════════════════════════════════');
         this.log('');
 
-        // Déterminer la version PTP à utiliser (on prend la première horloge)
-        const ptpVersion = this.clocks[0].version;
-        this.bmca = new BMCA(ptpVersion);
+        // Séparer les horloges par version PTP
+        const v1Clocks = this.clocks.filter(c => c.version === 1);
+        const v2Clocks = this.clocks.filter(c => c.version === 2);
 
-        this.log(`[INFO] Version PTP utilisée: v${ptpVersion}`);
         this.log(`[INFO] Nombre d'horloges participantes: ${this.clocks.length}`);
+        this.log(`   • PTPv1: ${v1Clocks.length}`);
+        this.log(`   • PTPv2: ${v2Clocks.length}`);
+        this.log('');
+
+        // IMPORTANT: PTPv1 et PTPv2 ne peuvent pas interopérer
+        // Ils doivent avoir des élections séparées
+        if (v1Clocks.length > 0 && v2Clocks.length > 0) {
+            this.log('[AVERTISSEMENT] Mélange de PTPv1 et PTPv2 détecté !');
+            this.log('[INFO] PTPv1 et PTPv2 ne sont PAS interopérables.');
+            this.log('[INFO] Deux élections séparées seront effectuées.');
+            this.log('');
+        }
+
+        let v1GM = null;
+        let v2GM = null;
+
+        // Élection PTPv1 si nécessaire
+        if (v1Clocks.length > 0) {
+            v1GM = await this.runBMCAForVersion(v1Clocks, 1);
+        }
+
+        // Élection PTPv2 si nécessaire
+        if (v2Clocks.length > 0) {
+            v2GM = await this.runBMCAForVersion(v2Clocks, 2);
+        }
+
+        // Déterminer le GM principal (priorité à v2 s'il existe)
+        this.grandmaster = v2GM || v1GM;
+
+        this.log('═══════════════════════════════════════════════════');
+        this.log('ÉLECTION TERMINÉE');
+        this.log('═══════════════════════════════════════════════════');
+
+        this.isRunning = false;
+        return this.grandmaster;
+    }
+
+    /**
+     * Effectue l'élection BMCA pour une version PTP spécifique
+     */
+    async runBMCAForVersion(clocks, version) {
+        this.log(`╔═══════════════════════════════════════════════════╗`);
+        this.log(`║  ÉLECTION BMCA POUR PTPv${version}                           ║`);
+        this.log(`╚═══════════════════════════════════════════════════╝`);
+        this.log('');
+
+        this.bmca = new BMCA(version);
+
+        this.log(`[INFO] Nombre d'horloges PTPv${version}: ${clocks.length}`);
         this.log('');
 
         // Afficher toutes les horloges participantes
-        this.log('HORLOGES PARTICIPANTES:');
-        this.clocks.forEach(clock => {
-            if (ptpVersion === 2) {
+        this.log('HORLOGES PARTICIPANTES (PTPv' + version + '):');
+        clocks.forEach(clock => {
+            if (version === 2) {
                 this.log(`   • ${clock.id}: P1=${clock.priority1}, Class=${clock.clockClass}, Acc=0x${clock.clockAccuracy.toString(16).toUpperCase()}, Var=${clock.offsetScaledLogVariance}, P2=${clock.priority2}`);
             } else {
                 this.log(`   • ${clock.id}: Stratum=${clock.stratum}, Precision=${clock.precision}, Variance=${clock.variance}`);
@@ -120,7 +168,7 @@ class PTPSimulation {
         this.log('─────────────────────────────────────────────────');
         await this.sleep(500);
 
-        for (const clock of this.clocks) {
+        for (const clock of clocks) {
             const announce = new AnnounceMessage(clock);
             this.log(`[${clock.id}] ➤ Envoie Announce (Domain: ${clock.domain})`);
             await this.sleep(200);
@@ -133,8 +181,8 @@ class PTPSimulation {
         await this.sleep(500);
 
         // Chaque horloge compare les Announce reçus
-        for (const clock of this.clocks) {
-            const otherClocks = this.clocks.filter(c => c.id !== clock.id);
+        for (const clock of clocks) {
+            const otherClocks = clocks.filter(c => c.id !== clock.id);
 
             if (otherClocks.length === 0) continue;
 
@@ -162,40 +210,38 @@ class PTPSimulation {
         this.log('─────────────────────────────────────────────────');
         await this.sleep(500);
 
-        this.grandmaster = this.bmca.electGrandmaster(this.clocks);
+        const grandmaster = this.bmca.electGrandmaster(clocks);
 
-        if (!this.grandmaster) {
+        if (!grandmaster) {
             this.log('[ERREUR] Impossible d\'élire un Grandmaster !');
             return null;
         }
 
-        this.log(`[RÉSULTAT] Le Grandmaster élu est: ${this.grandmaster.id}`);
+        this.log(`[RÉSULTAT] Le Grandmaster PTPv${version} élu est: ${grandmaster.id}`);
         this.log('');
 
-        // Mise à jour des états des horloges
+        // Mise à jour des états des horloges de cette version
         this.log('PHASE 4: MISE À JOUR DES ÉTATS');
         this.log('─────────────────────────────────────────────────');
         await this.sleep(500);
 
-        for (const clock of this.clocks) {
-            if (clock.id === this.grandmaster.id) {
+        for (const clock of clocks) {
+            if (clock.id === grandmaster.id) {
                 clock.setState(ClockState.MASTER);
                 this.log(`[${clock.id}] → État: MASTER`);
             } else {
-                clock.setState(ClockState.SLAVE);
-                clock.masterClock = this.grandmaster;
-                this.log(`[${clock.id}] → État: SLAVE (Maître: ${this.grandmaster.id})`);
+                // Ne devenir slave que si même version que le GM
+                if (clock.version === grandmaster.version) {
+                    clock.setState(ClockState.SLAVE);
+                    clock.masterClock = grandmaster;
+                    this.log(`[${clock.id}] → État: SLAVE (Maître: ${grandmaster.id})`);
+                }
             }
             await this.sleep(150);
         }
         this.log('');
 
-        this.log('═══════════════════════════════════════════════════');
-        this.log('ÉLECTION TERMINÉE');
-        this.log('═══════════════════════════════════════════════════');
-
-        this.isRunning = false;
-        return this.grandmaster;
+        return grandmaster;
     }
 
     /**
