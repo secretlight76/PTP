@@ -92,7 +92,7 @@ class PTPSimulation {
         this.clearLogs();
 
         this.log('═══════════════════════════════════════════════════');
-        this.log('🔄 DÉBUT DE L\'ÉLECTION DU GRANDMASTER (BMCA)');
+        this.log('DÉBUT DE L\'ÉLECTION DU GRANDMASTER (BMCA)');
         this.log('═══════════════════════════════════════════════════');
         this.log('');
 
@@ -105,7 +105,7 @@ class PTPSimulation {
         this.log('');
 
         // Afficher toutes les horloges participantes
-        this.log('📋 HORLOGES PARTICIPANTES:');
+        this.log('HORLOGES PARTICIPANTES:');
         this.clocks.forEach(clock => {
             if (ptpVersion === 2) {
                 this.log(`   • ${clock.id}: P1=${clock.priority1}, Class=${clock.clockClass}, Acc=0x${clock.clockAccuracy.toString(16).toUpperCase()}, Var=${clock.offsetScaledLogVariance}, P2=${clock.priority2}`);
@@ -116,7 +116,7 @@ class PTPSimulation {
         this.log('');
 
         // Simuler l'envoi de messages Announce
-        this.log('📡 PHASE 1: ENVOI DES MESSAGES ANNOUNCE');
+        this.log('PHASE 1: ENVOI DES MESSAGES ANNOUNCE');
         this.log('─────────────────────────────────────────────────');
         await this.sleep(500);
 
@@ -128,7 +128,7 @@ class PTPSimulation {
         this.log('');
 
         // Simuler la réception et la comparaison
-        this.log('🔍 PHASE 2: RÉCEPTION ET ANALYSE DES ANNOUNCE');
+        this.log('PHASE 2: RÉCEPTION ET ANALYSE DES ANNOUNCE');
         this.log('─────────────────────────────────────────────────');
         await this.sleep(500);
 
@@ -158,7 +158,7 @@ class PTPSimulation {
         }
 
         // Élection du Grandmaster
-        this.log('👑 PHASE 3: ÉLECTION DU GRANDMASTER');
+        this.log('PHASE 3: ÉLECTION DU GRANDMASTER');
         this.log('─────────────────────────────────────────────────');
         await this.sleep(500);
 
@@ -169,18 +169,18 @@ class PTPSimulation {
             return null;
         }
 
-        this.log(`[RÉSULTAT] Le Grandmaster élu est: 👑 ${this.grandmaster.id}`);
+        this.log(`[RÉSULTAT] Le Grandmaster élu est: ${this.grandmaster.id}`);
         this.log('');
 
         // Mise à jour des états des horloges
-        this.log('📊 PHASE 4: MISE À JOUR DES ÉTATS');
+        this.log('PHASE 4: MISE À JOUR DES ÉTATS');
         this.log('─────────────────────────────────────────────────');
         await this.sleep(500);
 
         for (const clock of this.clocks) {
             if (clock.id === this.grandmaster.id) {
                 clock.setState(ClockState.MASTER);
-                this.log(`[${clock.id}] → État: MASTER 👑`);
+                this.log(`[${clock.id}] → État: MASTER`);
             } else {
                 clock.setState(ClockState.SLAVE);
                 clock.masterClock = this.grandmaster;
@@ -191,7 +191,7 @@ class PTPSimulation {
         this.log('');
 
         this.log('═══════════════════════════════════════════════════');
-        this.log('✅ ÉLECTION TERMINÉE');
+        this.log('ÉLECTION TERMINÉE');
         this.log('═══════════════════════════════════════════════════');
 
         this.isRunning = false;
@@ -251,47 +251,47 @@ class PTPSimulation {
 
         this.log('');
         this.log('═══════════════════════════════════════════════════');
-        this.log('🔁 DÉBUT DE LA SYNCHRONISATION TEMPORELLE');
+        this.log('DÉBUT DE LA SYNCHRONISATION TEMPORELLE');
         this.log('═══════════════════════════════════════════════════');
         this.log('');
 
         const slaves = this.clocks.filter(c => c.state === ClockState.SLAVE);
 
         for (let cycle = 1; cycle <= cycles; cycle++) {
-            this.log(`📍 CYCLE DE SYNCHRONISATION #${cycle}`);
+            this.log(`CYCLE DE SYNCHRONISATION #${cycle}`);
             this.log('─────────────────────────────────────────────────');
             await this.sleep(500);
 
             // 1. Master envoie Sync
             this.messageSequence++;
             const syncMsg = new SyncMessage(this.grandmaster, this.messageSequence);
-            this.log(`[${this.grandmaster.id}] 📤 Envoie SYNC (Seq: ${syncMsg.sequenceId}, T1: ${syncMsg.originTimestamp})`);
+            this.log(`[${this.grandmaster.id}] TX Envoie SYNC (Seq: ${syncMsg.sequenceId}, T1: ${syncMsg.originTimestamp})`);
             this.grandmaster.syncsSent++;
             await this.sleep(300);
 
             // 2. Slaves reçoivent Sync
             for (const slave of slaves) {
                 const t2 = Date.now(); // Timestamp de réception
-                this.log(`[${slave.id}] 📥 Reçoit SYNC (T2: ${t2})`);
+                this.log(`[${slave.id}] RX Reçoit SYNC (T2: ${t2})`);
                 slave.syncsReceived++;
                 await this.sleep(200);
 
                 // 3. Slave envoie Delay_Req
                 this.messageSequence++;
                 const delayReq = new DelayReqMessage(slave, this.messageSequence);
-                this.log(`[${slave.id}] 📤 Envoie DELAY_REQ (Seq: ${delayReq.sequenceId}, T3: ${delayReq.originTimestamp})`);
+                this.log(`[${slave.id}] TX Envoie DELAY_REQ (Seq: ${delayReq.sequenceId}, T3: ${delayReq.originTimestamp})`);
                 await this.sleep(200);
 
                 // 4. Master reçoit Delay_Req et envoie Delay_Resp
                 const t4 = Date.now(); // Timestamp de réception par le master
                 const delayResp = new DelayRespMessage(this.grandmaster, delayReq.sequenceId, t4);
-                this.log(`[${this.grandmaster.id}] 📥 Reçoit DELAY_REQ de ${slave.id} (T4: ${t4})`);
-                this.log(`[${this.grandmaster.id}] 📤 Envoie DELAY_RESP à ${slave.id} (T4: ${delayResp.receiveTimestamp})`);
+                this.log(`[${this.grandmaster.id}] RX Reçoit DELAY_REQ de ${slave.id} (T4: ${t4})`);
+                this.log(`[${this.grandmaster.id}] TX Envoie DELAY_RESP à ${slave.id} (T4: ${delayResp.receiveTimestamp})`);
                 await this.sleep(200);
 
                 // 5. Slave calcule le délai (simplifié)
-                this.log(`[${slave.id}] 🧮 Calcule l'offset et le délai de propagation`);
-                this.log(`[${slave.id}] ✅ Synchronisé avec ${this.grandmaster.id}`);
+                this.log(`[${slave.id}] Calcule l'offset et le délai de propagation`);
+                this.log(`[${slave.id}] Synchronisé avec ${this.grandmaster.id}`);
                 await this.sleep(200);
             }
 
@@ -300,7 +300,7 @@ class PTPSimulation {
         }
 
         this.log('═══════════════════════════════════════════════════');
-        this.log('✅ SYNCHRONISATION TERMINÉE');
+        this.log('SYNCHRONISATION TERMINÉE');
         this.log('═══════════════════════════════════════════════════');
     }
 

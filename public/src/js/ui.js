@@ -20,6 +20,8 @@ class UIManager {
     initializeEventListeners() {
         // Boutons d'ajout d'horloges
         document.getElementById('btn-add-oc').addEventListener('click', () => this.addClock(ClockType.ORDINARY_CLOCK));
+        document.getElementById('btn-add-gm-gps').addEventListener('click', () => this.addClock(ClockType.GRANDMASTER_GPS));
+        document.getElementById('btn-add-gm-atomic').addEventListener('click', () => this.addClock(ClockType.GRANDMASTER_ATOMIC));
         document.getElementById('btn-add-bc').addEventListener('click', () => this.addClock(ClockType.BOUNDARY_CLOCK));
         document.getElementById('btn-add-tc-p2p').addEventListener('click', () => this.addClock(ClockType.TRANSPARENT_CLOCK_P2P));
         document.getElementById('btn-add-tc-e2e').addEventListener('click', () => this.addClock(ClockType.TRANSPARENT_CLOCK_E2E));
@@ -27,6 +29,7 @@ class UIManager {
         // Boutons de simulation
         document.getElementById('btn-run-bmca').addEventListener('click', () => this.runBMCASimulation());
         document.getElementById('btn-run-sync').addEventListener('click', () => this.runSynchronization());
+        document.getElementById('btn-reset-states').addEventListener('click', () => this.resetStates());
         document.getElementById('btn-reset').addEventListener('click', () => this.resetSimulation());
 
         // Bouton de sauvegarde de configuration
@@ -48,6 +51,14 @@ class UIManager {
         switch (type) {
             case ClockType.ORDINARY_CLOCK:
                 prefix = 'Horloge';
+                counter = 'OC';
+                break;
+            case ClockType.GRANDMASTER_GPS:
+                prefix = 'GM-GPS';
+                counter = 'OC';
+                break;
+            case ClockType.GRANDMASTER_ATOMIC:
+                prefix = 'GM-ATOMIC';
                 counter = 'OC';
                 break;
             case ClockType.BOUNDARY_CLOCK:
@@ -94,8 +105,8 @@ class UIManager {
         card.innerHTML = `
             <div class="flex items-center justify-between mb-2">
                 <h3 class="font-bold text-lg">${this.getClockIcon(clock)} ${clock.id}</h3>
-                <button onclick="event.stopPropagation(); uiManager.removeClock('${clock.id}')"
-                        class="text-red-500 hover:text-red-700 text-xl font-bold">
+                <button class="btn-remove-clock text-red-500 hover:text-red-700 text-xl font-bold"
+                        data-clock-id="${clock.id}">
                     ×
                 </button>
             </div>
@@ -105,6 +116,13 @@ class UIManager {
                 <div>État: <span id="clock-state-${clock.id}" class="font-semibold ${this.getStateColor(clock.state)}">${clock.state}</span></div>
             </div>
         `;
+
+        // Ajouter un gestionnaire d'événement pour le bouton de suppression
+        const removeBtn = card.querySelector('.btn-remove-clock');
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.removeClock(clock.id);
+        });
 
         container.appendChild(card);
     }
@@ -187,11 +205,30 @@ class UIManager {
         panel.appendChild(this.createSliderField('Priorité QoS (DSCP)', 'clock-dscp', clock.dscp, 0, 63,
             'Valeur DSCP pour prioriser les paquets PTP dans les switches (46 = Expedited Forwarding)'));
 
+        // Intervalles de messages PTP
+        const intervalsSection = document.createElement('div');
+        intervalsSection.className = 'mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200';
+        intervalsSection.innerHTML = '<h3 class="text-lg font-bold mb-3 text-gray-800">Intervalles de Messages</h3>';
+
+        intervalsSection.appendChild(this.createSliderField('Announce Interval (log2)', 'clock-announce-interval',
+            clock.announceInterval, -1, 4,
+            'Intervalle entre messages Announce. Valeur en log2 secondes (0 = 1s, 1 = 2s, 2 = 4s)'));
+
+        intervalsSection.appendChild(this.createSliderField('Sync Interval (log2)', 'clock-sync-interval',
+            clock.syncInterval, -7, 4,
+            'Intervalle entre messages Sync. Valeur en log2 secondes (-1 = 0.5s, 0 = 1s, 1 = 2s)'));
+
+        intervalsSection.appendChild(this.createSliderField('Announce Receipt Timeout', 'clock-announce-timeout',
+            clock.announceReceiptTimeout, 2, 10,
+            'Nombre de périodes Announce manquées avant timeout'));
+
+        panel.appendChild(intervalsSection);
+
         // Bouton de sauvegarde
         const saveBtn = document.createElement('button');
         saveBtn.id = 'btn-save-config';
         saveBtn.className = 'w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg mt-6 transition-colors';
-        saveBtn.textContent = '💾 Enregistrer la Configuration';
+        saveBtn.textContent = 'Enregistrer la Configuration';
         panel.appendChild(saveBtn);
 
         // Ré-attacher l'écouteur
@@ -211,7 +248,7 @@ class UIManager {
         section.id = 'bmca-v2-params';
         section.className = 'mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200';
 
-        section.innerHTML = '<h3 class="text-lg font-bold mb-3 text-blue-800">⚙️ Paramètres BMCA (PTPv2)</h3>';
+        section.innerHTML = '<h3 class="text-lg font-bold mb-3 text-blue-800">Paramètres BMCA (PTPv2)</h3>';
 
         // priority1
         section.appendChild(this.createSliderField('Priority1', 'clock-priority1', clock.priority1, 0, 255,
@@ -267,7 +304,30 @@ class UIManager {
         section.appendChild(this.createInfoField('Clock Identity', clock.clockIdentity,
             'Identifiant unique IEEE (basé sur l\'adresse MAC). Utilisé comme tie-breaker final'));
 
+        // timeSource (lecture seule)
+        if (clock.timeSource !== undefined) {
+            section.appendChild(this.createInfoField('Time Source', this.formatTimeSource(clock.timeSource),
+                'Source de référence temporelle utilisée par cette horloge'));
+        }
+
         panel.appendChild(section);
+    }
+
+    /**
+     * Formate la source de temps pour affichage
+     */
+    formatTimeSource(source) {
+        const sources = {
+            [TimeSource.ATOMIC_CLOCK]: 'Horloge Atomique',
+            [TimeSource.GPS]: 'GPS',
+            [TimeSource.TERRESTRIAL_RADIO]: 'Radio Terrestre',
+            [TimeSource.PTP]: 'PTP',
+            [TimeSource.NTP]: 'NTP',
+            [TimeSource.HAND_SET]: 'Manuel',
+            [TimeSource.OTHER]: 'Autre',
+            [TimeSource.INTERNAL_OSCILLATOR]: 'Oscillateur Interne'
+        };
+        return sources[source] || `0x${source.toString(16)}`;
     }
 
     /**
@@ -278,7 +338,7 @@ class UIManager {
         section.id = 'bmca-v1-params';
         section.className = 'mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200';
 
-        section.innerHTML = '<h3 class="text-lg font-bold mb-3 text-purple-800">⚙️ Paramètres BMCA (PTPv1)</h3>';
+        section.innerHTML = '<h3 class="text-lg font-bold mb-3 text-purple-800">Paramètres BMCA (PTPv1)</h3>';
 
         // Stratum
         const stratumDiv = document.createElement('div');
@@ -368,6 +428,11 @@ class UIManager {
         clock.domain = parseInt(document.getElementById('clock-domain')?.value || 0);
         clock.dscp = parseInt(document.getElementById('clock-dscp')?.value || 0);
 
+        // Sauvegarder les intervalles de messages
+        clock.announceInterval = parseInt(document.getElementById('clock-announce-interval')?.value || 1);
+        clock.syncInterval = parseInt(document.getElementById('clock-sync-interval')?.value || 0);
+        clock.announceReceiptTimeout = parseInt(document.getElementById('clock-announce-timeout')?.value || 3);
+
         if (clock.version === 2) {
             clock.priority1 = parseInt(document.getElementById('clock-priority1')?.value || 128);
             clock.clockClass = parseInt(document.getElementById('clock-class')?.value || 248);
@@ -384,7 +449,7 @@ class UIManager {
         this.updateClockCard(clock);
 
         // Notification
-        this.showNotification('✅ Configuration enregistrée !', 'success');
+        this.showNotification('Configuration enregistrée !', 'success');
     }
 
     /**
@@ -464,6 +529,35 @@ class UIManager {
     }
 
     /**
+     * Réinitialise uniquement les états des horloges (pas la topologie)
+     */
+    resetStates() {
+        if (this.simulation.clocks.length === 0) {
+            this.showNotification('Aucune horloge dans la topologie', 'info');
+            return;
+        }
+
+        // Réinitialiser les états de toutes les horloges
+        this.simulation.clocks.forEach(clock => {
+            clock.setState(ClockState.INITIALIZING);
+            clock.masterClock = null;
+            clock.syncsSent = 0;
+            clock.syncsReceived = 0;
+            this.updateClockCard(clock);
+        });
+
+        // Réinitialiser le grandmaster
+        this.simulation.grandmaster = null;
+        this.simulation.clearLogs();
+
+        // Effacer les logs et l'explication
+        document.getElementById('log-panel').innerHTML = '<p class="text-gray-400 text-center">Les logs de simulation apparaîtront ici...</p>';
+        document.getElementById('explanation-panel').innerHTML = '<p class="text-gray-400 text-center">L\'explication de l\'élection apparaîtra après la simulation BMCA...</p>';
+
+        this.showNotification('États réinitialisés - Prêt pour une nouvelle élection', 'info');
+    }
+
+    /**
      * Réinitialise la simulation
      */
     resetSimulation() {
@@ -484,7 +578,7 @@ class UIManager {
         this.selectedClock = null;
         this.clockCounter = { OC: 0, BC: 0, TC: 0 };
 
-        this.showNotification('🔄 Topologie réinitialisée', 'info');
+        this.showNotification('Topologie réinitialisée', 'info');
     }
 
     /**
@@ -502,10 +596,10 @@ class UIManager {
             // Colorer selon le type de message
             if (log.includes('[ERREUR]')) {
                 logLine.className += ' text-red-600 font-bold';
-            } else if (log.includes('👑') || log.includes('GRANDMASTER')) {
+            } else if (log.includes('GRANDMASTER')) {
                 logLine.className += ' text-yellow-600 font-bold';
-            } else if (log.includes('✅') || log.includes('✓')) {
-                logLine.className += ' text-green-600';
+            } else if (log.includes('[RÉSULTAT]')) {
+                logLine.className += ' text-green-600 font-bold';
             } else if (log.includes('═══')) {
                 logLine.className += ' text-blue-700 font-bold';
             } else if (log.includes('───')) {
@@ -534,7 +628,7 @@ class UIManager {
         // Titre
         const title = document.createElement('h2');
         title.className = 'text-2xl font-bold mb-4 text-yellow-600';
-        title.innerHTML = `👑 ${explanation.winner.id} est le Grandmaster !`;
+        title.innerHTML = `${explanation.winner.id} est le Grandmaster !`;
         explanationPanel.appendChild(title);
 
         // Résumé
@@ -599,8 +693,9 @@ class UIManager {
      */
     setButtonsEnabled(enabled) {
         const buttons = [
-            'btn-add-oc', 'btn-add-bc', 'btn-add-tc-p2p', 'btn-add-tc-e2e',
-            'btn-run-bmca', 'btn-run-sync', 'btn-reset'
+            'btn-add-oc', 'btn-add-gm-gps', 'btn-add-gm-atomic', 'btn-add-bc',
+            'btn-add-tc-p2p', 'btn-add-tc-e2e',
+            'btn-run-bmca', 'btn-run-sync', 'btn-reset-states', 'btn-reset'
         ];
         buttons.forEach(id => {
             const btn = document.getElementById(id);
@@ -683,19 +778,23 @@ class UIManager {
     }
 
     getClockIcon(clock) {
-        if (clock.state === ClockState.MASTER) return '👑';
+        if (clock.state === ClockState.MASTER) return '[GM]';
         switch (clock.type) {
-            case ClockType.ORDINARY_CLOCK: return '🕐';
-            case ClockType.BOUNDARY_CLOCK: return '🔀';
-            case ClockType.TRANSPARENT_CLOCK_P2P:
-            case ClockType.TRANSPARENT_CLOCK_E2E: return '⚡';
-            default: return '⏱️';
+            case ClockType.ORDINARY_CLOCK: return '[OC]';
+            case ClockType.GRANDMASTER_GPS: return '[GPS]';
+            case ClockType.GRANDMASTER_ATOMIC: return '[ATOMIC]';
+            case ClockType.BOUNDARY_CLOCK: return '[BC]';
+            case ClockType.TRANSPARENT_CLOCK_P2P: return '[TC-P2P]';
+            case ClockType.TRANSPARENT_CLOCK_E2E: return '[TC-E2E]';
+            default: return '[CLK]';
         }
     }
 
     formatClockType(type) {
         const types = {
             [ClockType.ORDINARY_CLOCK]: 'Ordinary Clock (OC)',
+            [ClockType.GRANDMASTER_GPS]: 'Grandmaster GPS',
+            [ClockType.GRANDMASTER_ATOMIC]: 'Grandmaster Atomique',
             [ClockType.BOUNDARY_CLOCK]: 'Boundary Clock (BC)',
             [ClockType.TRANSPARENT_CLOCK_P2P]: 'Transparent Clock P2P',
             [ClockType.TRANSPARENT_CLOCK_E2E]: 'Transparent Clock E2E'
@@ -706,10 +805,12 @@ class UIManager {
     getStateColor(state) {
         const colors = {
             [ClockState.INITIALIZING]: 'text-gray-500',
+            [ClockState.DISABLED]: 'text-gray-400',
             [ClockState.MASTER]: 'text-yellow-600',
             [ClockState.SLAVE]: 'text-blue-600',
             [ClockState.PASSIVE]: 'text-purple-600',
-            [ClockState.LISTENING]: 'text-green-600'
+            [ClockState.LISTENING]: 'text-green-600',
+            [ClockState.FAULTY]: 'text-red-600'
         };
         return colors[state] || 'text-gray-600';
     }
@@ -721,5 +822,5 @@ let uiManager;
 // Initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
     uiManager = new UIManager();
-    console.log('🚀 Simulateur PTP initialisé');
+    console.log('Simulateur PTP initialisé');
 });
