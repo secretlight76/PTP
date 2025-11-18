@@ -196,9 +196,8 @@ class UIManager {
 
         const card = document.createElement('div');
         card.id = `clock-card-${clock.id}`;
-        card.className = 'clock-card rounded shadow-sm p-2 cursor-pointer border transition-all';
+        card.className = 'clock-card glass-card rounded shadow-sm p-2 cursor-pointer border smooth-transition hover-scale';
         card.style.borderColor = 'var(--border-color)';
-        card.style.backgroundColor = 'var(--bg-primary)';
         card.onclick = () => this.selectClock(clock);
 
         card.innerHTML = `
@@ -686,8 +685,21 @@ class UIManager {
             if (gm) {
                 this.renderElectionExplanation();
 
+                // Ajouter l'animation pulse sur la carte du GM
+                const gmCard = document.getElementById(`clock-card-${gm.id}`);
+                if (gmCard) {
+                    gmCard.classList.add('pulse-gm', 'winner-highlight');
+                }
+
+                // Lancer les confettis pour célébrer !
+                if (typeof ConfettiSystem !== 'undefined') {
+                    const confetti = new ConfettiSystem();
+                    confetti.celebrate(3000, 50);
+                    setTimeout(() => confetti.starRain(2000), 500);
+                }
+
                 // Afficher une notification claire du résultat (5 secondes)
-                this.showNotification(`GRANDMASTER ÉLU : ${gm.id}`, 'success', 5000);
+                this.showNotification(`🎉 GRANDMASTER ÉLU : ${gm.id}`, 'success', 5000);
             }
         } catch (error) {
             console.error('Erreur lors de la simulation BMCA:', error);
@@ -1039,6 +1051,12 @@ class UIManager {
     }
 
     getClockIcon(clock) {
+        // Utiliser les icônes SVG animées si disponibles
+        if (typeof PTPIcons !== 'undefined') {
+            return PTPIcons.getClockIcon(clock, true);
+        }
+
+        // Fallback sur les icônes textuelles
         if (clock.state === ClockState.MASTER) return '[GM]';
         switch (clock.type) {
             case ClockType.ORDINARY_CLOCK: return '[OC]';

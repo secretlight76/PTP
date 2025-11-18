@@ -1,0 +1,474 @@
+/**
+ * animations.css - Animations et effets visuels pour le simulateur PTP
+ * Inclut: pulse, glassmorphism, confetti, transitions
+ */
+
+/* ========== ANIMATIONS KEYFRAMES ========== */
+
+/* Animation pulse pour le Grandmaster */
+@keyframes pulse-gm {
+    0%, 100% {
+        box-shadow: 0 0 0 0 var(--color-master);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 20px 10px rgba(255, 215, 0, 0.4);
+        transform: scale(1.02);
+    }
+}
+
+/* Animation glow (lueur) */
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 5px var(--color-master),
+                    0 0 10px var(--color-master),
+                    0 0 15px var(--color-master);
+    }
+    50% {
+        box-shadow: 0 0 10px var(--color-master),
+                    0 0 20px var(--color-master),
+                    0 0 30px var(--color-master);
+    }
+}
+
+/* Animation de respiration */
+@keyframes breathe {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+/* Animation de shimmer (scintillement) */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+/* Animation de slide-in depuis la droite */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Animation de slide-in depuis le haut */
+@keyframes slideInDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Animation de fade-in */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Animation de bounce */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Animation de shake */
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(5px);
+    }
+}
+
+/* Animation de rotation douce */
+@keyframes rotate-slow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Animation de flash */
+@keyframes flash {
+    0%, 50%, 100% {
+        opacity: 1;
+    }
+    25%, 75% {
+        opacity: 0;
+    }
+}
+
+/* Animation confetti fall */
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Animation de count-up pour les nombres */
+@keyframes count-up {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ========== CLASSES D'ANIMATION ========== */
+
+/* Pulse pour le GM */
+.pulse-gm {
+    animation: pulse-gm 2s ease-in-out infinite;
+}
+
+/* Glow effect */
+.glow-effect {
+    animation: glow 2s ease-in-out infinite;
+}
+
+/* Respiration */
+.breathe {
+    animation: breathe 3s ease-in-out infinite;
+}
+
+/* Slide animations */
+.slide-in-right {
+    animation: slideInRight 0.5s ease-out;
+}
+
+.slide-in-down {
+    animation: slideInDown 0.5s ease-out;
+}
+
+/* Fade in */
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Bounce */
+.bounce {
+    animation: bounce 1s ease-in-out;
+}
+
+/* Shake */
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* ========== GLASSMORPHISM ========== */
+
+.glass-panel {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+/* Glassmorphism en mode sombre */
+[data-theme="dark"] .glass-panel {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Effet de verre pour les cartes d'horloges */
+.glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .glass-card {
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .glass-card:hover {
+    background: rgba(0, 0, 0, 0.25);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ========== MICRO-INTERACTIONS ========== */
+
+/* Boutons avec effet de lift */
+.btn-lift {
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.btn-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-lift:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Effet ripple */
+.ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.ripple:active::after {
+    width: 300px;
+    height: 300px;
+}
+
+/* Shimmer effect pour loading */
+.shimmer {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+/* ========== HIGHLIGHT POUR COMPARAISONS ========== */
+
+.highlight-compare {
+    position: relative;
+    animation: pulse-gm 1.5s ease-in-out;
+    z-index: 100;
+}
+
+.highlight-compare::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 3px solid var(--color-warning);
+    border-radius: 8px;
+    animation: glow 2s ease-in-out infinite;
+    pointer-events: none;
+}
+
+/* Winner highlight */
+.winner-highlight {
+    background: linear-gradient(135deg,
+        rgba(255, 215, 0, 0.1) 0%,
+        rgba(255, 215, 0, 0.2) 100%);
+    border: 2px solid var(--color-master) !important;
+    animation: breathe 2s ease-in-out infinite;
+}
+
+/* Loser highlight */
+.loser-highlight {
+    opacity: 0.6;
+    filter: grayscale(0.5);
+}
+
+/* ========== CONFETTI ========== */
+
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    z-index: 10000;
+    pointer-events: none;
+}
+
+.confetti-piece {
+    position: absolute;
+    animation: confetti-fall linear forwards;
+}
+
+/* ========== PROGRESS BAR ========== */
+
+.progress-bar {
+    position: relative;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg,
+        var(--color-primary) 0%,
+        var(--color-success) 100%);
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+.progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    animation: shimmer 1.5s infinite;
+}
+
+/* ========== TOOLTIP RICHE ========== */
+
+.rich-tooltip {
+    position: absolute;
+    z-index: 10001;
+    background: var(--bg-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    animation: fadeIn 0.3s ease-out;
+    pointer-events: none;
+}
+
+.rich-tooltip::before {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid var(--color-primary);
+}
+
+/* ========== GRADIENT ANIMÉS ========== */
+
+.animated-gradient {
+    background: linear-gradient(
+        45deg,
+        var(--color-primary),
+        var(--color-success),
+        var(--color-info),
+        var(--color-primary)
+    );
+    background-size: 300% 300%;
+    animation: gradient-shift 8s ease infinite;
+}
+
+@keyframes gradient-shift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* ========== TRANSITIONS FLUIDES ========== */
+
+.smooth-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.smooth-transition-slow {
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========== HOVER EFFECTS ========== */
+
+.hover-scale:hover {
+    transform: scale(1.05);
+}
+
+.hover-brightness:hover {
+    filter: brightness(1.1);
+}
+
+.hover-shadow:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* ========== COMPARAISON VS BADGE ========== */
+
+.vs-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--color-warning), var(--color-error));
+    border-radius: 50%;
+    color: white;
+    font-weight: bold;
+    font-size: 24px;
+    animation: pulse-gm 1s ease-in-out infinite;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+}
