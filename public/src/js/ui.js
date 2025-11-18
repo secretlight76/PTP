@@ -98,21 +98,30 @@ class UIManager {
         const btnSaveLoad = document.getElementById('btn-save-load');
 
         if (btnTutorial) {
-            btnTutorial.addEventListener('click', () => this.startTutorial());
+            btnTutorial.addEventListener('click', () => {
+                console.log('[PTP] Tutorial button clicked!');
+                this.startTutorial();
+            });
             console.log('[PTP] ✓ Tutorial button listener attached');
         } else {
             console.error('[PTP] ✗ Tutorial button not found!');
         }
 
         if (btnScenarios) {
-            btnScenarios.addEventListener('click', () => this.showScenariosDialog());
+            btnScenarios.addEventListener('click', () => {
+                console.log('[PTP] Scenarios button clicked!');
+                this.showScenariosDialog();
+            });
             console.log('[PTP] ✓ Scenarios button listener attached');
         } else {
             console.error('[PTP] ✗ Scenarios button not found!');
         }
 
         if (btnSaveLoad) {
-            btnSaveLoad.addEventListener('click', () => this.showSaveLoadDialog());
+            btnSaveLoad.addEventListener('click', () => {
+                console.log('[PTP] Save/Load button clicked!');
+                this.showSaveLoadDialog();
+            });
             console.log('[PTP] ✓ Save/Load button listener attached');
         } else {
             console.error('[PTP] ✗ Save/Load button not found!');
@@ -925,11 +934,20 @@ class UIManager {
      */
     showNotification(message, type = 'info', duration = 3000) {
         const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 px-6 py-4 rounded-lg shadow-2xl z-50 transition-opacity ${
-            type === 'success' ? 'bg-green-600 text-white font-bold text-lg' :
-            type === 'error' ? 'bg-red-600 text-white font-bold' :
-            'bg-blue-500 text-white'
-        }`;
+        notification.style.cssText = `
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            z-index: 10001;
+            transition: opacity 0.3s;
+            font-weight: bold;
+            ${type === 'success' ? 'background-color: #059669; color: white; font-size: 1.125rem;' :
+              type === 'error' ? 'background-color: #dc2626; color: white;' :
+              'background-color: #0891b2; color: white;'}
+        `;
         notification.style.opacity = '0';
         notification.textContent = message;
         document.body.appendChild(notification);
@@ -1038,8 +1056,17 @@ class UIManager {
      * Démarrer le mode tutoriel
      */
     startTutorial() {
-        if (this.tutorial) {
-            this.tutorial.start();
+        console.log('[PTP] startTutorial called, tutorial instance:', this.tutorial);
+        try {
+            if (this.tutorial) {
+                this.tutorial.start();
+            } else {
+                console.error('[PTP] Tutorial not initialized!');
+                this.showNotification('Erreur: Le tutoriel n\'est pas disponible', 'error');
+            }
+        } catch (error) {
+            console.error('[PTP] Error starting tutorial:', error);
+            this.showNotification('Erreur lors du démarrage du tutoriel', 'error');
         }
     }
 
@@ -1047,7 +1074,14 @@ class UIManager {
      * Afficher la boîte de dialogue des scénarios
      */
     showScenariosDialog() {
-        const dialog = document.createElement('div');
+        console.log('[PTP] showScenariosDialog called');
+        try {
+            if (typeof PTPScenarios === 'undefined') {
+                console.error('[PTP] PTPScenarios not loaded!');
+                this.showNotification('Erreur: Les scénarios ne sont pas disponibles', 'error');
+                return;
+            }
+            const dialog = document.createElement('div');
         dialog.style.cssText = `
             position: fixed;
             top: 0;
@@ -1087,7 +1121,11 @@ class UIManager {
             </div>
         `;
 
-        document.body.appendChild(dialog);
+            document.body.appendChild(dialog);
+        } catch (error) {
+            console.error('[PTP] Error showing scenarios dialog:', error);
+            this.showNotification('Erreur lors de l\'affichage des scénarios', 'error');
+        }
     }
 
     /**
@@ -1116,7 +1154,14 @@ class UIManager {
      * Afficher la boîte de dialogue sauvegarde/chargement
      */
     showSaveLoadDialog() {
-        const savedConfigs = ConfigManager.getSavedConfigurations();
+        console.log('[PTP] showSaveLoadDialog called');
+        try {
+            if (typeof ConfigManager === 'undefined') {
+                console.error('[PTP] ConfigManager not loaded!');
+                this.showNotification('Erreur: Le gestionnaire de configuration n\'est pas disponible', 'error');
+                return;
+            }
+            const savedConfigs = ConfigManager.getSavedConfigurations();
 
         const configList = savedConfigs.map(config => `
             <div style="padding: 10px; margin: 8px 0; background: var(--bg-secondary); border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
@@ -1198,7 +1243,11 @@ class UIManager {
             </div>
         `;
 
-        document.body.appendChild(dialog);
+            document.body.appendChild(dialog);
+        } catch (error) {
+            console.error('[PTP] Error showing save/load dialog:', error);
+            this.showNotification('Erreur lors de l\'affichage du gestionnaire de configuration', 'error');
+        }
     }
 
     /**
