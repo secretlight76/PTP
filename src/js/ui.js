@@ -189,30 +189,36 @@ class UIManager {
     }
 
     /**
-     * Rend une carte d'horloge dans le panneau 1
+     * Rend une carte d'horloge COMPACTE dans le panneau 2
      */
     renderClockCard(clock) {
         const container = document.getElementById('topology-container');
 
         const card = document.createElement('div');
         card.id = `clock-card-${clock.id}`;
-        card.className = 'clock-card bg-white rounded-lg shadow-md p-4 cursor-pointer border-2 transition-all';
-        card.style.borderColor = 'transparent';
+        card.className = 'clock-card rounded shadow-sm p-2 cursor-pointer border transition-all';
+        card.style.borderColor = 'var(--border-color)';
+        card.style.backgroundColor = 'var(--bg-primary)';
         card.onclick = () => this.selectClock(clock);
 
         card.innerHTML = `
-            <div class="flex items-center justify-between mb-2">
-                <h3 class="font-bold text-lg" style="color: var(--text-primary);">${this.getClockIcon(clock)} ${clock.id}</h3>
-                <button class="btn-remove-clock text-xl font-bold"
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-1">
+                        <span class="text-sm font-bold truncate" style="color: var(--text-primary);" title="${clock.id}">${this.getClockIcon(clock)} ${clock.id}</span>
+                        <span class="text-xs px-1 rounded" style="background-color: var(--bg-tertiary); color: var(--text-secondary);">v${clock.version}</span>
+                    </div>
+                    <div class="text-xs mt-0.5" style="color: var(--text-tertiary);">
+                        <span id="clock-state-${clock.id}" style="${this.getStateColor(clock.state)}">${clock.state}</span>
+                        <span style="color: var(--text-muted);"> • D${clock.domain}</span>
+                    </div>
+                </div>
+                <button class="btn-remove-clock text-sm font-bold px-1.5"
                         style="color: var(--color-error);"
-                        data-clock-id="${clock.id}">
-                    ×
+                        data-clock-id="${clock.id}"
+                        title="Supprimer">
+                    ✕
                 </button>
-            </div>
-            <div class="text-sm" style="color: var(--text-secondary);">
-                <div>Type: <span class="font-semibold">${this.formatClockType(clock.type)}</span></div>
-                <div>Version: <span class="font-semibold">PTPv${clock.version}</span></div>
-                <div>État: <span id="clock-state-${clock.id}" class="font-semibold" style="${this.getStateColor(clock.state)}">${clock.state}</span></div>
             </div>
         `;
 
@@ -224,6 +230,19 @@ class UIManager {
         });
 
         container.appendChild(card);
+
+        // Mettre à jour le compteur de devices
+        this.updateDeviceCount();
+    }
+
+    /**
+     * Met à jour le compteur de devices
+     */
+    updateDeviceCount() {
+        const countElement = document.getElementById('device-count');
+        if (countElement) {
+            countElement.textContent = this.simulation.clocks.length;
+        }
     }
 
     /**
@@ -552,29 +571,33 @@ class UIManager {
     }
 
     /**
-     * Met à jour l'affichage d'une carte d'horloge
+     * Met à jour l'affichage d'une carte d'horloge COMPACTE
      */
     updateClockCard(clock) {
         const card = document.getElementById(`clock-card-${clock.id}`);
         if (!card) return;
 
-        // Mettre à jour tout le contenu de la carte
-        const removeBtn = card.querySelector('.btn-remove-clock');
         const isSelected = this.selectedClock && this.selectedClock.id === clock.id;
 
+        // Utiliser le même format compact que renderClockCard()
         card.innerHTML = `
-            <div class="flex items-center justify-between mb-2">
-                <h3 class="font-bold text-lg" style="color: var(--text-primary);">${this.getClockIcon(clock)} ${clock.id}</h3>
-                <button class="btn-remove-clock text-xl font-bold"
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-1">
+                        <span class="text-sm font-bold truncate" style="color: var(--text-primary);" title="${clock.id}">${this.getClockIcon(clock)} ${clock.id}</span>
+                        <span class="text-xs px-1 rounded" style="background-color: var(--bg-tertiary); color: var(--text-secondary);">v${clock.version}</span>
+                    </div>
+                    <div class="text-xs mt-0.5" style="color: var(--text-tertiary);">
+                        <span id="clock-state-${clock.id}" style="${this.getStateColor(clock.state)}">${clock.state}</span>
+                        <span style="color: var(--text-muted);"> • D${clock.domain}</span>
+                    </div>
+                </div>
+                <button class="btn-remove-clock text-sm font-bold px-1.5"
                         style="color: var(--color-error);"
-                        data-clock-id="${clock.id}">
-                    ×
+                        data-clock-id="${clock.id}"
+                        title="Supprimer">
+                    ✕
                 </button>
-            </div>
-            <div class="text-sm" style="color: var(--text-secondary);">
-                <div>Type: <span class="font-semibold">${this.formatClockType(clock.type)}</span></div>
-                <div>Version: <span class="font-semibold">PTPv${clock.version}</span></div>
-                <div>État: <span id="clock-state-${clock.id}" class="font-semibold" style="${this.getStateColor(clock.state)}">${clock.state}</span></div>
             </div>
         `;
 
@@ -589,12 +612,12 @@ class UIManager {
         if (clock.state === ClockState.MASTER) {
             card.style.borderColor = 'var(--color-master)';
             card.style.backgroundColor = 'var(--bg-tertiary)';
-            card.classList.add('shadow-xl');
+            card.classList.add('shadow-lg');
         } else {
-            card.classList.remove('shadow-xl');
+            card.classList.remove('shadow-lg');
             if (!isSelected) {
-                card.style.borderColor = 'transparent';
-                card.style.backgroundColor = '';
+                card.style.borderColor = 'var(--border-color)';
+                card.style.backgroundColor = 'var(--bg-primary)';
             }
         }
 
@@ -617,6 +640,9 @@ class UIManager {
             if (this.topology) {
                 this.topology.removeNode(clockId);
             }
+
+            // Mettre à jour le compteur de devices
+            this.updateDeviceCount();
 
             if (this.selectedClock && this.selectedClock.id === clockId) {
                 this.selectedClock = null;
