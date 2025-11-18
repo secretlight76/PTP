@@ -11,7 +11,22 @@ class UIManager {
         this.simulation = new PTPSimulation();
         this.selectedClock = null;
         this.clockCounter = { OC: 0, BC: 0, TC: 0 };
+        this.topology = null;
+        this.tutorial = null;
+        this.performanceCharts = null;
         this.initializeEventListeners();
+        this.initializeNewFeatures();
+    }
+
+    initializeNewFeatures() {
+        // Initialize network topology visualizer
+        this.topology = new NetworkTopology('network-topology-container', this.simulation);
+
+        // Initialize tutorial
+        this.tutorial = new PTPTutorial(this);
+
+        // Initialize performance charts
+        this.performanceCharts = new PerformanceCharts('performance-charts-container');
     }
 
     /**
@@ -34,6 +49,11 @@ class UIManager {
 
         // Bouton de sauvegarde de configuration
         document.getElementById('btn-save-config').addEventListener('click', () => this.saveClockConfiguration());
+
+        // Nouveaux boutons
+        document.getElementById('btn-tutorial').addEventListener('click', () => this.startTutorial());
+        document.getElementById('btn-scenarios').addEventListener('click', () => this.showScenariosDialog());
+        document.getElementById('btn-save-load').addEventListener('click', () => this.showSaveLoadDialog());
 
         // Écouteurs pour les changements de version PTP
         document.querySelectorAll('input[name="ptp-version"]').forEach(radio => {
@@ -86,6 +106,11 @@ class UIManager {
 
         // Ajouter à l'interface
         this.renderClockCard(newClock);
+
+        // Ajouter à la topologie visuelle
+        if (this.topology) {
+            this.topology.addClock(newClock);
+        }
 
         // Sélectionner automatiquement la nouvelle horloge
         this.selectClock(newClock);
@@ -461,16 +486,32 @@ class UIManager {
         const card = document.getElementById(`clock-card-${clock.id}`);
         if (!card) return;
 
-        card.querySelector('h3').innerHTML = `${this.getClockIcon(clock)} ${clock.id}`;
+        // Mettre à jour tout le contenu de la carte
+        const removeBtn = card.querySelector('.btn-remove-clock');
+        const isSelected = this.selectedClock && this.selectedClock.id === clock.id;
 
-        // Récupérer l'élément de l'état
-        const stateId = `clock-state-${clock.id.replace(/[^a-zA-Z0-9-]/g, '_')}`;
-        const stateElement = card.querySelector(`#${stateId}`);
-        if (stateElement) {
-            stateElement.textContent = clock.state;
-            stateElement.className = 'font-semibold';
-            stateElement.style = this.getStateColor(clock.state);
-        }
+        card.innerHTML = `
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="font-bold text-lg" style="color: var(--text-primary);">${this.getClockIcon(clock)} ${clock.id}</h3>
+                <button class="btn-remove-clock text-xl font-bold"
+                        style="color: var(--color-error);"
+                        data-clock-id="${clock.id}">
+                    ×
+                </button>
+            </div>
+            <div class="text-sm" style="color: var(--text-secondary);">
+                <div>Type: <span class="font-semibold">${this.formatClockType(clock.type)}</span></div>
+                <div>Version: <span class="font-semibold">PTPv${clock.version}</span></div>
+                <div>État: <span id="clock-state-${clock.id}" class="font-semibold" style="${this.getStateColor(clock.state)}">${clock.state}</span></div>
+            </div>
+        `;
+
+        // Ré-attacher le gestionnaire d'événement pour le bouton de suppression
+        const newRemoveBtn = card.querySelector('.btn-remove-clock');
+        newRemoveBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.removeClock(clock.id);
+        });
 
         // Mettre en évidence la carte du Grandmaster
         if (clock.state === ClockState.MASTER) {
@@ -479,11 +520,15 @@ class UIManager {
             card.classList.add('shadow-xl');
         } else {
             card.classList.remove('shadow-xl');
-            const isSelected = this.selectedClock && this.selectedClock.id === clock.id;
             if (!isSelected) {
                 card.style.borderColor = 'transparent';
                 card.style.backgroundColor = '';
             }
+        }
+
+        // Mettre à jour la topologie visuelle
+        if (this.topology) {
+            this.topology.updateNode(clock);
         }
     }
 
@@ -495,6 +540,11 @@ class UIManager {
             this.simulation.removeClock(clockId);
             const card = document.getElementById(`clock-card-${clockId}`);
             if (card) card.remove();
+
+            // Supprimer de la topologie visuelle
+            if (this.topology) {
+                this.topology.removeNode(clockId);
+            }
 
             if (this.selectedClock && this.selectedClock.id === clockId) {
                 this.selectedClock = null;
@@ -529,6 +579,11 @@ class UIManager {
             // Mettre à jour les états des cartes
             this.simulation.clocks.forEach(clock => this.updateClockCard(clock));
 
+            // Mettre à jour la topologie visuelle (liens master-slave)
+            if (this.topology) {
+                this.topology.updateLinks();
+            }
+
             // Afficher l'explication
             if (gm) {
                 this.renderElectionExplanation();
@@ -555,8 +610,52 @@ class UIManager {
         }
 
         this.setButtonsEnabled(false);
+
+        // Animer les messages sur la topologie
+        const gm = this.simulation.grandmaster;
+        const slaves = this.simulation.clocks.filter(c => c.state === ClockState.SLAVE);
+
+        for (const slave of slaves) {
+            // Animer Sync
+            if (this.topology) {
+                this.topology.animateMessage(gm.id, slave.id, 'SYNC', 800);
+            }
+            await this.simulation.sleep(400);
+
+            // Animer Delay_Req
+            if (this.topology) {
+                this.topology.animateMessage(slave.id, gm.id, 'DELAY_REQ', 800);
+            }
+            await this.simulation.sleep(400);
+
+            // Animer Delay_Resp
+            if (this.topology) {
+                this.topology.animateMessage(gm.id, slave.id, 'DELAY_RESP', 800);
+            }
+            await this.simulation.sleep(400);
+        }
+
+        // Exécuter la simulation normale
         await this.simulation.runSynchronization(2);
         this.renderLogs();
+
+        // Afficher les formules mathématiques avec des valeurs simulées
+        const t1 = Date.now();
+        const t2 = t1 + 1000 + Math.random() * 100;
+        const t3 = t2 + 500;
+        const t4 = t3 + 1000 + Math.random() * 100;
+
+        const formulasContainer = document.getElementById('math-formulas-container');
+        formulasContainer.innerHTML = MathFormulas.displaySyncFormulas(t1, t2, t3, t4);
+        formulasContainer.innerHTML += MathFormulas.displayTimingDiagram(t1, t2, t3, t4);
+
+        // Ajouter des données de performance
+        const offset = ((t2 - t1) - (t4 - t3)) / 2;
+        const delay = ((t2 - t1) + (t4 - t3)) / 2;
+        if (this.performanceCharts) {
+            this.performanceCharts.addDataPoint(offset, delay);
+        }
+
         this.setButtonsEnabled(true);
     }
 
@@ -604,6 +703,16 @@ class UIManager {
         document.getElementById('config-panel').innerHTML = '<p class="text-gray-500 text-center mt-8">Sélectionnez une horloge pour la configurer</p>';
         document.getElementById('log-panel').innerHTML = '';
         document.getElementById('explanation-panel').innerHTML = '';
+
+        // Réinitialiser la topologie visuelle
+        if (this.topology) {
+            this.topology.clear();
+        }
+
+        // Réinitialiser les graphiques de performance
+        if (this.performanceCharts) {
+            this.performanceCharts.clear();
+        }
 
         // Réinitialiser la simulation
         this.simulation.reset();
@@ -859,6 +968,279 @@ class UIManager {
         };
         return colors[state] || 'color: var(--text-secondary);';
     }
+
+    // ===== Nouvelles Fonctionnalités =====
+
+    /**
+     * Démarrer le mode tutoriel
+     */
+    startTutorial() {
+        if (this.tutorial) {
+            this.tutorial.start();
+        }
+    }
+
+    /**
+     * Afficher la boîte de dialogue des scénarios
+     */
+    showScenariosDialog() {
+        const dialog = document.createElement('div');
+        dialog.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+
+        const scenarioList = Object.keys(PTPScenarios).map(key => {
+            const scenario = PTPScenarios[key];
+            return `
+                <div class="scenario-item" style="padding: 15px; margin: 10px 0; background: var(--bg-secondary); border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;"
+                     onmouseover="this.style.borderColor='var(--color-primary)'; this.style.background='var(--bg-tertiary)';"
+                     onmouseout="this.style.borderColor='transparent'; this.style.background='var(--bg-secondary)';"
+                     onclick="window.uiManager.loadScenario('${key}'); this.closest('[style*=fixed]').remove();">
+                    <h4 style="color: var(--color-primary); font-weight: bold; margin-bottom: 5px;">${scenario.name}</h4>
+                    <p style="color: var(--text-secondary); font-size: 14px;">${scenario.description}</p>
+                    <p style="color: var(--text-tertiary); font-size: 12px; margin-top: 5px;">${scenario.clocks.length} horloges</p>
+                </div>
+            `;
+        }).join('');
+
+        dialog.innerHTML = `
+            <div style="background: var(--bg-primary); border-radius: 12px; padding: 30px; max-width: 600px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+                <h2 style="color: var(--text-primary); margin-bottom: 20px; font-size: 24px;">Scénarios Prédéfinis</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">Sélectionnez un scénario pour charger une configuration prête à l'emploi :</p>
+                ${scenarioList}
+                <button onclick="this.closest('[style*=fixed]').remove();"
+                        style="margin-top: 20px; width: 100%; background: var(--color-error); color: white; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                    Fermer
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(dialog);
+    }
+
+    /**
+     * Charger un scénario
+     */
+    loadScenario(scenarioKey) {
+        try {
+            const scenario = ConfigManager.loadScenario(scenarioKey, this.simulation, this);
+
+            // Mettre à jour la topologie visuelle
+            if (this.topology) {
+                this.topology.clear();
+                this.simulation.clocks.forEach(clock => {
+                    this.topology.addClock(clock);
+                });
+            }
+
+            this.showNotification(`Scénario "${scenario.name}" chargé avec succès !`, 'success');
+        } catch (error) {
+            this.showNotification('Erreur lors du chargement du scénario', 'error');
+            console.error(error);
+        }
+    }
+
+    /**
+     * Afficher la boîte de dialogue sauvegarde/chargement
+     */
+    showSaveLoadDialog() {
+        const savedConfigs = ConfigManager.getSavedConfigurations();
+
+        const configList = savedConfigs.map(config => `
+            <div style="padding: 10px; margin: 8px 0; background: var(--bg-secondary); border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="color: var(--text-primary); font-weight: bold;">${config.name}</div>
+                    <div style="color: var(--text-tertiary); font-size: 12px;">${new Date(config.timestamp).toLocaleString()} - ${config.clocks.length} horloges</div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="window.uiManager.loadConfig('${config.name}'); this.closest('[style*=fixed]').remove();"
+                            style="background: var(--color-success); color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                        Charger
+                    </button>
+                    <button onclick="window.uiManager.deleteConfig('${config.name}'); this.closest('[style*=fixed]').remove(); window.uiManager.showSaveLoadDialog();"
+                            style="background: var(--color-error); color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                        Supprimer
+                    </button>
+                </div>
+            </div>
+        `).join('') || '<p style="color: var(--text-tertiary); text-align: center; padding: 20px;">Aucune configuration sauvegardée</p>';
+
+        const dialog = document.createElement('div');
+        dialog.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+
+        dialog.innerHTML = `
+            <div style="background: var(--bg-primary); border-radius: 12px; padding: 30px; max-width: 600px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+                <h2 style="color: var(--text-primary); margin-bottom: 20px; font-size: 24px;">Sauvegarder / Charger</h2>
+
+                <!-- Save Section -->
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: var(--text-primary); margin-bottom: 10px; font-size: 18px;">Sauvegarder la Configuration Actuelle</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="config-name-input" placeholder="Nom de la configuration"
+                               style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-secondary); color: var(--text-primary);">
+                        <button onclick="window.uiManager.saveCurrentConfig(); this.closest('[style*=fixed]').remove();"
+                                style="background: var(--color-primary); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                            Sauvegarder
+                        </button>
+                    </div>
+                    <button onclick="window.uiManager.exportConfig();"
+                            style="margin-top: 10px; width: 100%; background: var(--color-info); color: white; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                        📥 Exporter en JSON
+                    </button>
+                </div>
+
+                <!-- Load Section -->
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: var(--text-primary); margin-bottom: 10px; font-size: 18px;">Configurations Sauvegardées</h3>
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        ${configList}
+                    </div>
+                </div>
+
+                <!-- Import Section -->
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: var(--text-primary); margin-bottom: 10px; font-size: 18px;">Importer depuis JSON</h3>
+                    <input type="file" id="import-file-input" accept=".json"
+                           style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-secondary); color: var(--text-primary);">
+                    <button onclick="window.uiManager.importConfig(); this.closest('[style*=fixed]').remove();"
+                            style="margin-top: 10px; width: 100%; background: var(--color-success); color: white; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                        📤 Importer
+                    </button>
+                </div>
+
+                <button onclick="this.closest('[style*=fixed]').remove();"
+                        style="width: 100%; background: var(--color-error); color: white; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                    Fermer
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(dialog);
+    }
+
+    /**
+     * Sauvegarder la configuration actuelle
+     */
+    saveCurrentConfig() {
+        const nameInput = document.getElementById('config-name-input');
+        const name = nameInput?.value.trim() || `Config-${Date.now()}`;
+
+        if (this.simulation.clocks.length === 0) {
+            alert('Aucune horloge à sauvegarder !');
+            return;
+        }
+
+        try {
+            ConfigManager.saveConfiguration(this.simulation, name);
+            this.showNotification(`Configuration "${name}" sauvegardée !`, 'success');
+        } catch (error) {
+            this.showNotification('Erreur lors de la sauvegarde', 'error');
+            console.error(error);
+        }
+    }
+
+    /**
+     * Charger une configuration
+     */
+    loadConfig(configName) {
+        try {
+            ConfigManager.loadConfiguration(configName, this.simulation, this);
+
+            // Mettre à jour la topologie visuelle
+            if (this.topology) {
+                this.topology.clear();
+                this.simulation.clocks.forEach(clock => {
+                    this.topology.addClock(clock);
+                });
+            }
+
+            this.showNotification(`Configuration "${configName}" chargée !`, 'success');
+        } catch (error) {
+            this.showNotification('Erreur lors du chargement', 'error');
+            console.error(error);
+        }
+    }
+
+    /**
+     * Supprimer une configuration
+     */
+    deleteConfig(configName) {
+        if (confirm(`Supprimer la configuration "${configName}" ?`)) {
+            ConfigManager.deleteConfiguration(configName);
+            this.showNotification(`Configuration "${configName}" supprimée`, 'info');
+        }
+    }
+
+    /**
+     * Exporter la configuration actuelle en JSON
+     */
+    exportConfig() {
+        const nameInput = document.getElementById('config-name-input');
+        const name = nameInput?.value.trim() || `Config-${Date.now()}`;
+
+        if (this.simulation.clocks.length === 0) {
+            alert('Aucune horloge à exporter !');
+            return;
+        }
+
+        try {
+            ConfigManager.exportToJSON(this.simulation, name);
+            this.showNotification(`Configuration exportée !`, 'success');
+        } catch (error) {
+            this.showNotification('Erreur lors de l\'export', 'error');
+            console.error(error);
+        }
+    }
+
+    /**
+     * Importer une configuration depuis JSON
+     */
+    async importConfig() {
+        const fileInput = document.getElementById('import-file-input');
+        const file = fileInput?.files[0];
+
+        if (!file) {
+            alert('Veuillez sélectionner un fichier !');
+            return;
+        }
+
+        try {
+            await ConfigManager.importFromJSON(file, this.simulation, this);
+
+            // Mettre à jour la topologie visuelle
+            if (this.topology) {
+                this.topology.clear();
+                this.simulation.clocks.forEach(clock => {
+                    this.topology.addClock(clock);
+                });
+            }
+
+            this.showNotification('Configuration importée !', 'success');
+        } catch (error) {
+            this.showNotification('Erreur lors de l\'import', 'error');
+            console.error(error);
+        }
+    }
 }
 
 // Instance globale
@@ -867,5 +1249,6 @@ let uiManager;
 // Initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
     uiManager = new UIManager();
+    window.uiManager = uiManager; // Make it globally accessible for dialog onclick handlers
     console.log('Simulateur PTP initialisé');
 });

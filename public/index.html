@@ -50,23 +50,44 @@
     <!-- Container principal -->
     <main class="container mx-auto px-4 py-8">
 
-        <!-- Barre d'information -->
+        <!-- Barre d'information avec actions rapides -->
         <div style="background-color: var(--bg-tertiary); border-left: 4px solid var(--color-info);" class="p-4 mb-6 rounded-r-lg">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    <svg class="h-6 w-6" style="color: var(--color-info);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+            <div class="flex items-start justify-between">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6" style="color: var(--color-info);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm" style="color: var(--text-primary);">
+                            <strong>Guide rapide :</strong>
+                            (1) Ajoutez des horloges à votre topologie,
+                            (2) Configurez leurs paramètres BMCA,
+                            (3) Lancez la simulation pour voir l'élection du Grandmaster en action !
+                        </p>
+                    </div>
                 </div>
-                <div class="ml-3">
-                    <p class="text-sm" style="color: var(--text-primary);">
-                        <strong>Guide rapide :</strong>
-                        (1) Ajoutez des horloges à votre topologie,
-                        (2) Configurez leurs paramètres BMCA,
-                        (3) Lancez la simulation pour voir l'élection du Grandmaster en action !
-                    </p>
+                <div class="flex gap-2 ml-4">
+                    <button id="btn-tutorial" class="px-4 py-2 rounded-lg text-white font-semibold" style="background-color: var(--color-success);">
+                        🎓 Tutoriel
+                    </button>
+                    <button id="btn-scenarios" class="px-4 py-2 rounded-lg text-white font-semibold" style="background-color: var(--color-info);">
+                        📋 Scénarios
+                    </button>
+                    <button id="btn-save-load" class="px-4 py-2 rounded-lg text-white font-semibold" style="background-color: var(--color-passive);">
+                        💾 Sauvegarder
+                    </button>
                 </div>
             </div>
+        </div>
+
+        <!-- Visual Network Topology Panel -->
+        <div class="mb-6 rounded-lg shadow-lg p-6 panel">
+            <h2 class="text-2xl font-bold mb-4 pb-2" style="color: var(--text-primary); border-bottom: 2px solid var(--color-primary);">
+                Topologie Réseau Visuelle
+            </h2>
+            <div id="network-topology-container"></div>
         </div>
 
         <!-- Grille à 3 colonnes -->
@@ -209,6 +230,33 @@
 
         </div>
 
+        <!-- Performance Charts and Math Formulas -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            <!-- Performance Charts -->
+            <div class="rounded-lg shadow-lg p-6 panel">
+                <h2 class="text-2xl font-bold mb-4 pb-2" style="color: var(--text-primary); border-bottom: 2px solid var(--color-success);">
+                    Graphiques de Performance
+                </h2>
+                <div id="performance-charts-container">
+                    <p class="text-center" style="color: var(--text-tertiary); padding: 40px;">
+                        Aucune donnée de performance. Lancez une synchronisation pour voir les graphiques.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Math Formulas -->
+            <div class="rounded-lg shadow-lg p-6 panel">
+                <h2 class="text-2xl font-bold mb-4 pb-2" style="color: var(--text-primary); border-bottom: 2px solid var(--color-info);">
+                    Formules Mathématiques
+                </h2>
+                <div id="math-formulas-container">
+                    <p class="text-center" style="color: var(--text-tertiary); padding: 40px;">
+                        Les calculs de synchronisation apparaîtront ici après une simulation Sync.
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <!-- Section pédagogique -->
         <div class="mt-8 rounded-lg shadow-lg p-6 panel" style="border: 1px solid var(--border-color);">
             <h2 class="text-2xl font-bold mb-4" style="color: var(--text-primary);">À Propos du PTP et du BMCA</h2>
@@ -274,6 +322,10 @@
     <script src="src/js/clock.js"></script>
     <script src="src/js/bmca.js"></script>
     <script src="src/js/simulation.js"></script>
+    <script src="src/js/scenarios.js"></script>
+    <script src="src/js/topology.js"></script>
+    <script src="src/js/tutorial.js"></script>
+    <script src="src/js/utils.js"></script>
     <script src="src/js/ui.js"></script>
     <script src="src/js/theme.js"></script>
 
