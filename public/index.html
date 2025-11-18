@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Simulateur Interactif PTP v1/v2 - Outil pédagogique pour comprendre le Precision Time Protocol et le BMCA">
+    <meta name="keywords" content="PTP, IEEE 1588, BMCA, Precision Time Protocol, simulation, éducation">
+    <meta name="author" content="Simulateur PTP">
+
+    <title>Simulateur Interactif PTP v1/v2 - Best Master Clock Algorithm</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Styles personnalisés -->
+    <link rel="stylesheet" href="src/css/styles.css">
+
+    <!-- Favicon (emoji) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕐</text></svg>">
+</head>
+<body class="bg-gray-100 font-sans antialiased">
+
+    <!-- En-tête -->
+    <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
+        <div class="container mx-auto px-6 py-6">
+            <h1 class="text-4xl font-bold mb-2">🕐 Simulateur Interactif PTP v1/v2</h1>
+            <p class="text-blue-100 text-lg">
+                Comprenez le <strong>Precision Time Protocol</strong> et l'algorithme <strong>BMCA</strong> (Best Master Clock Algorithm)
+            </p>
+        </div>
+    </header>
+
+    <!-- Container principal -->
+    <main class="container mx-auto px-4 py-8">
+
+        <!-- Barre d'information -->
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-r-lg">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-blue-700">
+                        <strong>Guide rapide :</strong>
+                        (1) Ajoutez des horloges à votre topologie,
+                        (2) Configurez leurs paramètres BMCA,
+                        (3) Lancez la simulation pour voir l'élection du Grandmaster en action !
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grille à 3 colonnes -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- ========== PANNEAU 1 : Atelier de Topologie ========== -->
+            <div class="bg-white rounded-lg shadow-lg p-6 panel">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800 border-b-2 border-blue-500 pb-2">
+                    🔧 Atelier de Topologie
+                </h2>
+
+                <!-- Boutons d'ajout -->
+                <div class="space-y-3 mb-6">
+                    <button id="btn-add-oc"
+                            class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+                        <span>🕐</span>
+                        <span>Ajouter une Horloge (OC)</span>
+                    </button>
+
+                    <button id="btn-add-bc"
+                            class="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+                        <span>🔀</span>
+                        <span>Ajouter un Switch (BC)</span>
+                    </button>
+
+                    <button id="btn-add-tc-p2p"
+                            class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+                        <span>⚡</span>
+                        <span>Ajouter un Switch (TC P2P)</span>
+                    </button>
+
+                    <button id="btn-add-tc-e2e"
+                            class="w-full bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+                        <span>⚡</span>
+                        <span>Ajouter un Switch (TC E2E)</span>
+                    </button>
+                </div>
+
+                <div class="border-t-2 border-gray-200 pt-4 mb-4">
+                    <h3 class="font-bold text-gray-700 mb-3">📋 Horloges dans la Topologie</h3>
+
+                    <!-- Zone de visualisation des horloges -->
+                    <div id="topology-container" class="space-y-3 min-h-[200px] max-h-[400px] overflow-y-auto pr-2">
+                        <!-- Les cartes d'horloges seront ajoutées ici dynamiquement -->
+                        <p class="text-gray-400 text-center mt-8 text-sm">Aucune horloge. Ajoutez-en une ci-dessus !</p>
+                    </div>
+                </div>
+
+                <!-- Contrôles de simulation -->
+                <div class="border-t-2 border-gray-200 pt-4 space-y-3">
+                    <h3 class="font-bold text-gray-700 mb-3">🎮 Contrôles de Simulation</h3>
+
+                    <button id="btn-run-bmca"
+                            class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md">
+                        ▶️ Lancer l'Élection BMCA
+                    </button>
+
+                    <button id="btn-run-sync"
+                            class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                        🔁 Simuler la Synchronisation
+                    </button>
+
+                    <button id="btn-reset"
+                            class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                        🔄 Réinitialiser la Topologie
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========== PANNEAU 2 : Panneau de Configuration ========== -->
+            <div class="bg-white rounded-lg shadow-lg p-6 panel">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800 border-b-2 border-purple-500 pb-2">
+                    ⚙️ Configuration
+                </h2>
+
+                <!-- Zone de configuration -->
+                <div id="config-panel" class="overflow-y-auto max-h-[700px] pr-2">
+                    <p class="text-gray-500 text-center mt-8">
+                        Sélectionnez une horloge pour la configurer
+                    </p>
+                </div>
+            </div>
+
+            <!-- ========== PANNEAU 3 : Visualisateur BMCA & Log ========== -->
+            <div class="bg-white rounded-lg shadow-lg p-6 panel">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800 border-b-2 border-green-500 pb-2">
+                    📊 Visualisation & Résultats
+                </h2>
+
+                <!-- Onglets -->
+                <div class="mb-4 border-b border-gray-200">
+                    <nav class="flex space-x-4">
+                        <button id="tab-logs"
+                                class="tab-button px-4 py-2 font-semibold text-green-600 border-b-2 border-green-600">
+                            📜 Logs de Simulation
+                        </button>
+                        <button id="tab-explanation"
+                                class="tab-button px-4 py-2 font-semibold text-gray-500 hover:text-green-600">
+                            💡 Explication BMCA
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Contenu des onglets -->
+                <div id="tab-content">
+                    <!-- Log Panel -->
+                    <div id="log-panel" class="bg-gray-50 rounded-lg p-4 font-mono text-sm border border-gray-200 overflow-y-auto max-h-[600px]">
+                        <p class="text-gray-400 text-center">Les logs de simulation apparaîtront ici...</p>
+                    </div>
+
+                    <!-- Explanation Panel (caché par défaut) -->
+                    <div id="explanation-panel" class="hidden bg-gray-50 rounded-lg p-4 border border-gray-200 overflow-y-auto max-h-[600px]">
+                        <p class="text-gray-400 text-center">L'explication de l'élection apparaîtra après la simulation BMCA...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Section pédagogique -->
+        <div class="mt-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg shadow-lg p-6 border border-blue-200">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">📚 À Propos du PTP et du BMCA</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-bold text-blue-700 mb-2">🎯 Qu'est-ce que le PTP ?</h3>
+                    <p class="text-gray-700 text-sm leading-relaxed">
+                        Le <strong>Precision Time Protocol</strong> (IEEE 1588) est un protocole de synchronisation temporelle
+                        de haute précision pour les réseaux Ethernet. Il permet d'obtenir une précision de l'ordre de la
+                        <strong>nanoseconde</strong> entre les horloges d'un réseau.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-bold text-purple-700 mb-2">👑 Qu'est-ce que le BMCA ?</h3>
+                    <p class="text-gray-700 text-sm leading-relaxed">
+                        Le <strong>Best Master Clock Algorithm</strong> est l'algorithme qui détermine quelle horloge
+                        du réseau devient le <strong>Grandmaster</strong> (la référence temporelle). Il compare les
+                        paramètres de chaque horloge selon une hiérarchie stricte.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-bold text-green-700 mb-2">🔀 Types d'Horloges</h3>
+                    <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
+                        <li><strong>OC (Ordinary Clock)</strong> : Horloge simple (Master ou Slave)</li>
+                        <li><strong>BC (Boundary Clock)</strong> : Switch qui participe au BMCA</li>
+                        <li><strong>TC (Transparent Clock)</strong> : Switch qui corrige les délais</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-bold text-yellow-700 mb-2">⚖️ Critères BMCA (PTPv2)</h3>
+                    <ol class="text-sm text-gray-700 space-y-1 list-decimal list-inside">
+                        <li><strong>priority1</strong> (configurable par l'admin)</li>
+                        <li><strong>clockClass</strong> (qualité de la source)</li>
+                        <li><strong>clockAccuracy</strong> (précision)</li>
+                        <li><strong>offsetScaledLogVariance</strong> (stabilité)</li>
+                        <li><strong>priority2</strong> (réglage fin)</li>
+                        <li><strong>clockIdentity</strong> (tie-breaker)</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="bg-gray-800 text-white mt-12 py-6">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-sm">
+                Simulateur PTP v1/v2 - Outil pédagogique pour comprendre IEEE 1588
+            </p>
+            <p class="text-xs text-gray-400 mt-2">
+                Créé avec ❤️ pour l'apprentissage du Precision Time Protocol
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts JavaScript -->
+    <script src="src/js/clock.js"></script>
+    <script src="src/js/bmca.js"></script>
+    <script src="src/js/simulation.js"></script>
+    <script src="src/js/ui.js"></script>
+
+    <!-- Script pour gérer les onglets -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabLogs = document.getElementById('tab-logs');
+            const tabExplanation = document.getElementById('tab-explanation');
+            const logPanel = document.getElementById('log-panel');
+            const explanationPanel = document.getElementById('explanation-panel');
+
+            tabLogs.addEventListener('click', () => {
+                // Activer l'onglet Logs
+                tabLogs.classList.add('text-green-600', 'border-b-2', 'border-green-600');
+                tabLogs.classList.remove('text-gray-500');
+                tabExplanation.classList.remove('text-green-600', 'border-b-2', 'border-green-600');
+                tabExplanation.classList.add('text-gray-500');
+
+                // Afficher le panel Logs
+                logPanel.classList.remove('hidden');
+                explanationPanel.classList.add('hidden');
+            });
+
+            tabExplanation.addEventListener('click', () => {
+                // Activer l'onglet Explication
+                tabExplanation.classList.add('text-green-600', 'border-b-2', 'border-green-600');
+                tabExplanation.classList.remove('text-gray-500');
+                tabLogs.classList.remove('text-green-600', 'border-b-2', 'border-green-600');
+                tabLogs.classList.add('text-gray-500');
+
+                // Afficher le panel Explication
+                explanationPanel.classList.remove('hidden');
+                logPanel.classList.add('hidden');
+            });
+        });
+    </script>
+
+</body>
+</html>

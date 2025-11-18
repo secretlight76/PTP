@@ -1,0 +1,4 @@
+# Redirections pour Cloudflare Pages
+
+# Rediriger toutes les 404 vers la page principale (SPA behavior)
+/* /index.html 200

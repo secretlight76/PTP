@@ -1,0 +1,29 @@
+{
+  "name": "simulateur-ptp",
+  "version": "1.0.0",
+  "description": "Simulateur Interactif PTP v1/v2 - Application éducative pour comprendre le Precision Time Protocol",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx wrangler pages dev public --port 8080",
+    "deploy": "npx wrangler pages deploy public",
+    "build": "echo 'No build step required - static files ready'",
+    "preview": "npx wrangler pages dev public"
+  },
+  "keywords": [
+    "PTP",
+    "Precision Time Protocol",
+    "BMCA",
+    "IEEE 1588",
+    "simulation",
+    "éducation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.78.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

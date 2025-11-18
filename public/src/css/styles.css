@@ -1,0 +1,257 @@
+/**
+ * styles.css - Styles personnalisés pour le Simulateur PTP
+ * Complète Tailwind CSS avec des styles spécifiques
+ */
+
+/* Variables CSS */
+:root {
+    --primary-color: #3b82f6;
+    --secondary-color: #8b5cf6;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --error-color: #ef4444;
+    --gray-light: #f3f4f6;
+    --gray-dark: #1f2937;
+}
+
+/* Styles pour les sliders */
+input[type="range"].slider {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+input[type="range"].slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+input[type="range"].slider::-webkit-slider-thumb:hover {
+    background: #2563eb;
+    transform: scale(1.1);
+}
+
+input[type="range"].slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+input[type="range"].slider::-moz-range-thumb:hover {
+    background: #2563eb;
+    transform: scale(1.1);
+}
+
+/* Animation pour les cartes d'horloges */
+.clock-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.clock-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles pour les tooltips */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    white-space: normal;
+    width: 250px;
+    font-size: 12px;
+    line-height: 1.4;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tooltip:hover::before {
+    content: "";
+    position: absolute;
+    bottom: 115%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+}
+
+/* Styles pour les logs */
+.log-line {
+    padding: 2px 4px;
+    font-family: 'Courier New', monospace;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+#log-panel {
+    max-height: 500px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+#log-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+#log-panel::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+#log-panel::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+#log-panel::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Styles pour les tableaux de comparaison */
+table {
+    border-collapse: collapse;
+}
+
+table th {
+    background-color: var(--gray-light);
+    font-weight: 600;
+}
+
+table tr:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* Animation de chargement */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loading {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Styles pour les boutons */
+button {
+    transition: all 0.2s ease;
+}
+
+button:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+/* Styles pour les panels */
+.panel {
+    min-height: 400px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .tooltip:hover::after {
+        width: 200px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 768px) {
+    .clock-card {
+        margin-bottom: 12px;
+    }
+
+    .tooltip:hover::after {
+        width: 150px;
+        font-size: 10px;
+    }
+}
+
+/* Animations d'entrée */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.clock-card {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Styles pour les états des horloges */
+.state-master {
+    color: #f59e0b;
+    font-weight: 700;
+}
+
+.state-slave {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.state-initializing {
+    color: #6b7280;
+}
+
+/* Bordure colorée pour le panneau actif */
+.panel-active {
+    border-left: 4px solid var(--primary-color);
+}
+
+/* Styles pour les badges */
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-master {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.badge-slave {
+    background-color: #dbeafe;
+    color: #1e3a8a;
+}
+
+/* Impression */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    .clock-card {
+        break-inside: avoid;
+    }
+}
