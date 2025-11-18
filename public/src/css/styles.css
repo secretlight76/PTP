@@ -245,10 +245,10 @@ button:disabled {
 
 /* ========== Theme Toggle ========== */
 .theme-toggle {
-    position: fixed;
+    position: fixed !important;
     top: 20px;
     right: 20px;
-    z-index: 1000;
+    z-index: 10002 !important;
     background-color: var(--bg-primary);
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -256,6 +256,7 @@ button:disabled {
     cursor: pointer;
     box-shadow: var(--shadow-md);
     transition: all 0.2s ease;
+    transform: translateZ(0);
 }
 
 .theme-toggle:hover {
