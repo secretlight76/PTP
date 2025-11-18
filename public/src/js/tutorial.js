@@ -233,7 +233,7 @@ class PTPTutorial {
     }
 }
 
-// Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { PTPTutorial };
+// Export for browser use
+if (typeof window !== 'undefined') {
+    window.PTPTutorial = PTPTutorial;
 }

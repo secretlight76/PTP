@@ -19,14 +19,56 @@ class UIManager {
     }
 
     initializeNewFeatures() {
-        // Initialize network topology visualizer
-        this.topology = new NetworkTopology('network-topology-container', this.simulation);
+        console.log('[PTP] Initializing new features...');
 
-        // Initialize tutorial
-        this.tutorial = new PTPTutorial(this);
+        try {
+            // Initialize network topology visualizer
+            console.log('[PTP] Creating NetworkTopology...');
+            if (typeof NetworkTopology !== 'undefined') {
+                this.topology = new NetworkTopology('network-topology-container', this.simulation);
+                console.log('[PTP] ✓ NetworkTopology initialized');
+            } else {
+                console.error('[PTP] ✗ NetworkTopology class not found!');
+            }
 
-        // Initialize performance charts
-        this.performanceCharts = new PerformanceCharts('performance-charts-container');
+            // Initialize tutorial
+            console.log('[PTP] Creating PTPTutorial...');
+            if (typeof PTPTutorial !== 'undefined') {
+                this.tutorial = new PTPTutorial(this);
+                console.log('[PTP] ✓ PTPTutorial initialized');
+            } else {
+                console.error('[PTP] ✗ PTPTutorial class not found!');
+            }
+
+            // Initialize performance charts
+            console.log('[PTP] Creating PerformanceCharts...');
+            if (typeof PerformanceCharts !== 'undefined') {
+                this.performanceCharts = new PerformanceCharts('performance-charts-container');
+                console.log('[PTP] ✓ PerformanceCharts initialized');
+            } else {
+                console.error('[PTP] ✗ PerformanceCharts class not found!');
+            }
+
+            // Initialize contextual help system
+            console.log('[PTP] Creating ContextualHelp...');
+            if (typeof ContextualHelp !== 'undefined') {
+                this.contextualHelp = new ContextualHelp();
+                console.log('[PTP] ✓ ContextualHelp initialized');
+
+                // Add progress guide (can be hidden by user)
+                setTimeout(() => {
+                    const guide = this.contextualHelp.addProgressGuide();
+                    document.body.appendChild(guide);
+                    console.log('[PTP] ✓ Progress guide added');
+                }, 1000);
+            } else {
+                console.error('[PTP] ✗ ContextualHelp class not found!');
+            }
+
+            console.log('[PTP] All features initialized successfully!');
+        } catch (error) {
+            console.error('[PTP] Error during initialization:', error);
+        }
     }
 
     /**
@@ -51,9 +93,30 @@ class UIManager {
         document.getElementById('btn-save-config').addEventListener('click', () => this.saveClockConfiguration());
 
         // Nouveaux boutons
-        document.getElementById('btn-tutorial').addEventListener('click', () => this.startTutorial());
-        document.getElementById('btn-scenarios').addEventListener('click', () => this.showScenariosDialog());
-        document.getElementById('btn-save-load').addEventListener('click', () => this.showSaveLoadDialog());
+        const btnTutorial = document.getElementById('btn-tutorial');
+        const btnScenarios = document.getElementById('btn-scenarios');
+        const btnSaveLoad = document.getElementById('btn-save-load');
+
+        if (btnTutorial) {
+            btnTutorial.addEventListener('click', () => this.startTutorial());
+            console.log('[PTP] ✓ Tutorial button listener attached');
+        } else {
+            console.error('[PTP] ✗ Tutorial button not found!');
+        }
+
+        if (btnScenarios) {
+            btnScenarios.addEventListener('click', () => this.showScenariosDialog());
+            console.log('[PTP] ✓ Scenarios button listener attached');
+        } else {
+            console.error('[PTP] ✗ Scenarios button not found!');
+        }
+
+        if (btnSaveLoad) {
+            btnSaveLoad.addEventListener('click', () => this.showSaveLoadDialog());
+            console.log('[PTP] ✓ Save/Load button listener attached');
+        } else {
+            console.error('[PTP] ✗ Save/Load button not found!');
+        }
 
         // Écouteurs pour les changements de version PTP
         document.querySelectorAll('input[name="ptp-version"]').forEach(radio => {
