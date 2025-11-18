@@ -332,10 +332,8 @@ class BMCA {
     }
 }
 
-// Export pour utilisation dans d'autres modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        BMCA,
-        ComparisonResult
-    };
+// Export for browser use
+if (typeof window !== 'undefined') {
+    window.BMCA = BMCA;
+    window.ComparisonResult = ComparisonResult;
 }
