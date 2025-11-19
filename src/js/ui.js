@@ -40,14 +40,14 @@ class UIManager {
                 console.error('[PTP] ✗ PTPTutorial class not found!');
             }
 
-            // Initialize performance charts
-            console.log('[PTP] Creating PerformanceCharts...');
-            if (typeof PerformanceCharts !== 'undefined') {
-                this.performanceCharts = new PerformanceCharts('performance-charts-container');
-                console.log('[PTP] ✓ PerformanceCharts initialized');
-            } else {
-                console.error('[PTP] ✗ PerformanceCharts class not found!');
-            }
+            // Performance charts désactivés (section supprimée)
+            // console.log('[PTP] Creating PerformanceCharts...');
+            // if (typeof PerformanceCharts !== 'undefined') {
+            //     this.performanceCharts = new PerformanceCharts('performance-charts-container');
+            //     console.log('[PTP] ✓ PerformanceCharts initialized');
+            // } else {
+            //     console.error('[PTP] ✗ PerformanceCharts class not found!');
+            // }
 
             // Initialize contextual help system
             console.log('[PTP] Creating ContextualHelp...');
@@ -687,15 +687,14 @@ class UIManager {
         // Ajouter des données de performance
         const offset = ((t2 - t1) - (t4 - t3)) / 2;
         const delay = ((t2 - t1) + (t4 - t3)) / 2;
-        if (this.performanceCharts) {
-            this.performanceCharts.addDataPoint(offset, delay);
-
-            // Auto-expand performance section to show the charts
-            const performanceSection = document.getElementById('performance-section');
-            if (performanceSection && performanceSection.classList.contains('collapsed')) {
-                toggleSection('performance-section');
-            }
-        }
+        // Performance charts désactivés
+        // if (this.performanceCharts) {
+        //     this.performanceCharts.addDataPoint(offset, delay);
+        //     const performanceSection = document.getElementById('performance-section');
+        //     if (performanceSection && performanceSection.classList.contains('collapsed')) {
+        //         toggleSection('performance-section');
+        //     }
+        // }
 
         this.setButtonsEnabled(true);
     }
