@@ -100,59 +100,35 @@
             </div>
             <div id="network-topology-section" class="collapsible-content">
                 <div class="content-inner">
-                    <!-- Layout 3 colonnes: sidebar | canvas | config -->
-                    <div style="display: flex; gap: 8px; align-items: stretch; min-height: 500px;">
-                        <!-- Sidebar gauche: Boutons d'ajout verticaux (réduit à 80px) -->
-                        <div style="width: 80px; flex-shrink: 0; background: var(--bg-tertiary); border: 2px solid var(--border-color); border-radius: 6px; padding: 6px;">
-                            <h3 style="margin: 0 0 6px 0; font-size: 10px; font-weight: 700; color: var(--text-primary); font-family: 'Roboto Mono', 'Courier New', monospace; text-align: center;">
+                    <!-- Grid 4 colonnes: selector | topo col2 | topo col3 | config -->
+                    <div style="display: grid; grid-template-columns: 100px 1fr 1fr 300px; gap: 8px; min-height: 500px;">
+                        <!-- Colonne 1: Sélecteur devices -->
+                        <div style="background: var(--bg-tertiary); border: 2px solid var(--border-color); border-radius: 6px; padding: 6px;">
+                            <h3 style="margin: 0 0 6px 0; font-size: 10px; font-weight: 700; color: var(--text-primary); font-family: 'Roboto Mono', monospace; text-align: center;">
                                 ➕ Add
                             </h3>
                             <div style="display: flex; flex-direction: column; gap: 4px;">
-                                <button id="btn-add-oc"
-                                        class="text-white font-bold py-1 px-1 rounded text-xs transition-all"
-                                        style="background-color: var(--color-slave); font-family: 'Roboto Mono', 'Courier New', monospace; font-size: 10px;">
-                                    OC
-                                </button>
-                                <button id="btn-add-gm-gps"
-                                        class="text-white font-bold py-1 px-1 rounded text-xs transition-all"
-                                        style="background-color: var(--color-success); font-family: 'Roboto Mono', 'Courier New', monospace; font-size: 10px;">
-                                    GM GPS
-                                </button>
-                                <button id="btn-add-gm-atomic"
-                                        class="text-white font-bold py-1 px-1 rounded text-xs transition-all"
-                                        style="background-color: var(--color-success); font-family: 'Roboto Mono', 'Courier New', monospace; font-size: 10px;">
-                                    GM Atom
-                                </button>
-                                <button id="btn-add-bc"
-                                        class="text-white font-bold py-1 px-1 rounded text-xs transition-all"
-                                        style="background-color: var(--color-passive); font-family: 'Roboto Mono', 'Courier New', monospace; font-size: 10px;">
-                                    BC
-                                </button>
-                                <button id="btn-add-tc-p2p"
-                                        class="text-white font-bold py-1 px-1 rounded text-xs transition-all"
-                                        style="background-color: var(--color-info); font-family: 'Roboto Mono', 'Courier New', monospace; font-size: 10px;">
-                                    TC P2P
-                                </button>
-                                <button id="btn-add-tc-e2e"
-                                        class="text-white font-bold py-1 px-1 rounded text-xs transition-all"
-                                        style="background-color: var(--color-info); font-family: 'Roboto Mono', 'Courier New', monospace; font-size: 10px;">
-                                    TC E2E
-                                </button>
+                                <button id="btn-add-oc" class="text-white font-bold py-1 px-1 rounded text-xs transition-all" style="background-color: var(--color-slave); font-family: 'Roboto Mono', monospace; font-size: 10px;">OC</button>
+                                <button id="btn-add-gm-gps" class="text-white font-bold py-1 px-1 rounded text-xs transition-all" style="background-color: var(--color-success); font-family: 'Roboto Mono', monospace; font-size: 10px;">GM GPS</button>
+                                <button id="btn-add-gm-atomic" class="text-white font-bold py-1 px-1 rounded text-xs transition-all" style="background-color: var(--color-success); font-family: 'Roboto Mono', monospace; font-size: 10px;">GM Atom</button>
+                                <button id="btn-add-bc" class="text-white font-bold py-1 px-1 rounded text-xs transition-all" style="background-color: var(--color-passive); font-family: 'Roboto Mono', monospace; font-size: 10px;">BC</button>
+                                <button id="btn-add-tc-p2p" class="text-white font-bold py-1 px-1 rounded text-xs transition-all" style="background-color: var(--color-info); font-family: 'Roboto Mono', monospace; font-size: 10px;">TC P2P</button>
+                                <button id="btn-add-tc-e2e" class="text-white font-bold py-1 px-1 rounded text-xs transition-all" style="background-color: var(--color-info); font-family: 'Roboto Mono', monospace; font-size: 10px;">TC E2E</button>
                             </div>
                         </div>
 
-                        <!-- Canvas de visualisation -->
-                        <div style="flex: 1; background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 6px; padding: 6px;">
+                        <!-- Colonnes 2-3: Visualiseur topologie (span 2 colonnes) -->
+                        <div style="grid-column: span 2; background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 6px; padding: 6px;">
                             <div id="network-topology-container" style="width: 100%; height: 100%;"></div>
                         </div>
 
-                        <!-- Config panel à droite (compact) -->
-                        <div style="width: 280px; flex-shrink: 0; background: var(--bg-primary); border: 2px solid var(--border-color); border-radius: 6px; padding: 6px; display: flex; flex-direction: column; box-sizing: border-box;">
-                            <h3 style="margin: 0 0 6px 0; font-size: 11px; font-weight: 700; color: var(--text-primary); font-family: 'Roboto Mono', 'Courier New', monospace; padding-bottom: 4px; border-bottom: 2px solid var(--color-passive); flex-shrink: 0;">
+                        <!-- Colonne 4: Config -->
+                        <div style="background: var(--bg-primary); border: 2px solid var(--border-color); border-radius: 6px; padding: 6px; display: flex; flex-direction: column; box-sizing: border-box;">
+                            <h3 style="margin: 0 0 6px 0; font-size: 11px; font-weight: 700; color: var(--text-primary); font-family: 'Roboto Mono', monospace; padding-bottom: 4px; border-bottom: 2px solid var(--color-passive); flex-shrink: 0;">
                                 ⚙️ Config
                             </h3>
                             <div id="config-panel" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding-right: 2px;">
-                                <p class="text-center" style="color: var(--text-tertiary); font-family: 'Roboto Mono', 'Courier New', monospace; font-size: 10px; margin-top: 12px;">
+                                <p class="text-center" style="color: var(--text-tertiary); font-family: 'Roboto Mono', monospace; font-size: 10px; margin-top: 12px;">
                                     Clic node → config
                                 </p>
                             </div>
@@ -162,24 +138,24 @@
             </div>
         </div>
 
-        <!-- Grille à 2 colonnes - Formules & Simulation -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <!-- Grid 4 colonnes - Formules & Simulation -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px;">
 
-            <!-- ========== Formules Mathématiques ========== -->
-            <div class="rounded-lg shadow-lg p-4 panel glass-panel smooth-transition" style="border: 2px solid var(--border-color);">
-                <h2 class="text-xl font-bold mb-3 pb-2" style="color: var(--text-primary); border-bottom: 3px solid var(--color-info); font-family: 'Roboto Mono', 'Courier New', monospace;">
+            <!-- Colonnes 1-2: Formules Mathématiques (span 2) -->
+            <div style="grid-column: span 2; background: var(--bg-primary); border: 2px solid var(--border-color); border-radius: 6px; padding: 12px; box-sizing: border-box;">
+                <h2 style="font-size: 14px; font-weight: 700; margin: 0 0 8px 0; color: var(--text-primary); border-bottom: 2px solid var(--color-info); padding-bottom: 4px; font-family: 'Roboto Mono', monospace;">
                     📐 Formules Mathématiques
                 </h2>
                 <div id="math-formulas-container">
-                    <p class="text-center text-xs" style="color: var(--text-tertiary); padding: 20px;">
+                    <p class="text-center" style="color: var(--text-tertiary); padding: 20px; font-size: 11px;">
                         Après simulation Sync
                     </p>
                 </div>
             </div>
 
-            <!-- ========== Contrôles & Logs ========== -->
-            <div class="rounded-lg shadow-lg p-4 panel glass-panel smooth-transition" style="border: 2px solid var(--border-color);">
-                <h2 class="text-xl font-bold mb-3 pb-2" style="color: var(--text-primary); border-bottom: 3px solid var(--color-success); font-family: 'Roboto Mono', 'Courier New', monospace;">
+            <!-- Colonnes 3-4: Simulation & Logs (span 2) -->
+            <div style="grid-column: span 2; background: var(--bg-primary); border: 2px solid var(--border-color); border-radius: 6px; padding: 12px; box-sizing: border-box;">
+                <h2 style="font-size: 14px; font-weight: 700; margin: 0 0 8px 0; color: var(--text-primary); border-bottom: 2px solid var(--color-success); padding-bottom: 4px; font-family: 'Roboto Mono', monospace;">
                     🎮 Simulation & Logs
                 </h2>
 
