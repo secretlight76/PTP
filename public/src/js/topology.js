@@ -132,6 +132,51 @@ class NetworkTopology {
         version.textContent = `PTPv${clock.version}`;
         g.appendChild(version);
 
+        // Delete button (top-right corner)
+        const deleteBtn = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        deleteBtn.setAttribute('class', 'delete-btn');
+        deleteBtn.setAttribute('transform', `translate(${size - 10}, ${-size + 10})`);
+        deleteBtn.style.cursor = 'pointer';
+        deleteBtn.style.opacity = '0.7';
+
+        const deleteBg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        deleteBg.setAttribute('r', '12');
+        deleteBg.setAttribute('fill', 'var(--color-error)');
+        deleteBg.setAttribute('stroke', 'white');
+        deleteBg.setAttribute('stroke-width', '2');
+        deleteBtn.appendChild(deleteBg);
+
+        const deleteIcon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        deleteIcon.setAttribute('text-anchor', 'middle');
+        deleteIcon.setAttribute('y', '4');
+        deleteIcon.setAttribute('fill', 'white');
+        deleteIcon.setAttribute('font-size', '14');
+        deleteIcon.setAttribute('font-weight', 'bold');
+        deleteIcon.textContent = '✕';
+        deleteBtn.appendChild(deleteIcon);
+
+        // Delete button click handler
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm(`Supprimer ${clock.id} de la topologie ?`)) {
+                if (window.uiManager) {
+                    window.uiManager.removeClock(clock.id);
+                }
+            }
+        });
+
+        // Show/hide delete button on hover
+        deleteBtn.addEventListener('mouseenter', () => {
+            deleteBtn.style.opacity = '1';
+            deleteBg.setAttribute('r', '14');
+        });
+        deleteBtn.addEventListener('mouseleave', () => {
+            deleteBtn.style.opacity = '0.7';
+            deleteBg.setAttribute('r', '12');
+        });
+
+        g.appendChild(deleteBtn);
+
         // Drag handlers
         this.addDragHandlers(g);
 
@@ -162,11 +207,18 @@ class NetworkTopology {
     addDragHandlers(node) {
         const clockId = node.getAttribute('data-clock-id');
         let startX, startY, offsetX, offsetY;
+        let hasMoved = false;
+        let mouseDownX, mouseDownY;
 
         node.addEventListener('mousedown', (e) => {
             this.isDragging = true;
             this.draggedNode = node;
+            hasMoved = false;
             node.style.cursor = 'grabbing';
+
+            // Store mouse down position to detect if it's a click or drag
+            mouseDownX = e.clientX;
+            mouseDownY = e.clientY;
 
             const transform = node.getAttribute('transform');
             const match = transform.match(/translate\(([-\d.]+),([-\d.]+)\)/);
@@ -185,6 +237,13 @@ class NetworkTopology {
         const onMouseMove = (e) => {
             if (!this.isDragging || this.draggedNode !== node) return;
 
+            // Check if mouse has moved significantly (threshold: 5px)
+            const dx = Math.abs(e.clientX - mouseDownX);
+            const dy = Math.abs(e.clientY - mouseDownY);
+            if (dx > 5 || dy > 5) {
+                hasMoved = true;
+            }
+
             const rect = this.svg.getBoundingClientRect();
             const newX = e.clientX - rect.left - offsetX;
             const newY = e.clientY - rect.top - offsetY;
@@ -202,14 +261,32 @@ class NetworkTopology {
 
         const onMouseUp = () => {
             if (this.draggedNode === node) {
+                // If didn't move, it's a click -> select the clock
+                if (!hasMoved) {
+                    this.selectClock(clockId);
+                }
+
                 this.isDragging = false;
                 this.draggedNode = null;
+                hasMoved = false;
                 node.style.cursor = 'grab';
             }
         };
 
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
+    }
+
+    selectClock(clockId) {
+        // Find the clock in simulation
+        const clock = this.simulation.clocks.find(c => c.id === clockId);
+        if (!clock) return;
+
+        // Call the UI manager's selectClock method
+        // We need to access the uiManager through window
+        if (window.uiManager) {
+            window.uiManager.selectClock(clock);
+        }
     }
 
     updateNode(clock) {

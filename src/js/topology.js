@@ -132,6 +132,51 @@ class NetworkTopology {
         version.textContent = `PTPv${clock.version}`;
         g.appendChild(version);
 
+        // Delete button (top-right corner)
+        const deleteBtn = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        deleteBtn.setAttribute('class', 'delete-btn');
+        deleteBtn.setAttribute('transform', `translate(${size - 10}, ${-size + 10})`);
+        deleteBtn.style.cursor = 'pointer';
+        deleteBtn.style.opacity = '0.7';
+
+        const deleteBg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        deleteBg.setAttribute('r', '12');
+        deleteBg.setAttribute('fill', 'var(--color-error)');
+        deleteBg.setAttribute('stroke', 'white');
+        deleteBg.setAttribute('stroke-width', '2');
+        deleteBtn.appendChild(deleteBg);
+
+        const deleteIcon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        deleteIcon.setAttribute('text-anchor', 'middle');
+        deleteIcon.setAttribute('y', '4');
+        deleteIcon.setAttribute('fill', 'white');
+        deleteIcon.setAttribute('font-size', '14');
+        deleteIcon.setAttribute('font-weight', 'bold');
+        deleteIcon.textContent = '✕';
+        deleteBtn.appendChild(deleteIcon);
+
+        // Delete button click handler
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm(`Supprimer ${clock.id} de la topologie ?`)) {
+                if (window.uiManager) {
+                    window.uiManager.removeClock(clock.id);
+                }
+            }
+        });
+
+        // Show/hide delete button on hover
+        deleteBtn.addEventListener('mouseenter', () => {
+            deleteBtn.style.opacity = '1';
+            deleteBg.setAttribute('r', '14');
+        });
+        deleteBtn.addEventListener('mouseleave', () => {
+            deleteBtn.style.opacity = '0.7';
+            deleteBg.setAttribute('r', '12');
+        });
+
+        g.appendChild(deleteBtn);
+
         // Drag handlers
         this.addDragHandlers(g);
 
