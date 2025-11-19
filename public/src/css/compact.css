@@ -163,7 +163,7 @@ textarea {
 
 /* ========== SECTIONS PÉDAGOGIQUES - COLLAPSIBLES ========== */
 .collapsible-section {
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--border-color);
     border-radius: 6px;
     margin-bottom: var(--spacing-md);
     overflow: hidden;
@@ -177,15 +177,19 @@ textarea {
     background: var(--bg-secondary);
     cursor: pointer;
     user-select: none;
+    border-bottom: 2px solid var(--border-color);
 }
 
 .collapsible-header:hover {
     background: var(--bg-tertiary);
 }
 
+.collapsible-header h2,
 .collapsible-header h3 {
     font-size: 0.875rem !important;
     margin: 0 !important;
+    font-family: 'Roboto Mono', 'Monaco', 'Courier New', monospace !important;
+    font-weight: 700 !important;
 }
 
 .collapsible-content {
