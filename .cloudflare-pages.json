@@ -2,9 +2,11 @@
   "project_name": "simulateur-ptp",
   "production_branch": "main",
   "build": {
-    "command": "",
-    "output_directory": "public",
-    "environment_variables": {}
+    "command": "npm run build",
+    "output_directory": "dist",
+    "environment_variables": {
+      "NODE_VERSION": "20"
+    }
   },
   "deployment": {
     "compatibility_date": "2024-01-01",
