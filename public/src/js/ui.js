@@ -246,10 +246,10 @@ class UIManager {
         const panel = document.getElementById('config-panel');
         panel.innerHTML = ''; // Vider le panneau
 
-        // Titre
+        // Titre compact
         const title = document.createElement('h2');
-        title.className = 'text-2xl font-bold mb-4 text-gray-800';
-        title.textContent = `Configuration: ${clock.id}`;
+        title.style.cssText = 'font-size: 11px; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); font-family: "Roboto Mono", monospace; padding-bottom: 4px; border-bottom: 2px solid var(--color-info);';
+        title.textContent = clock.id;
         panel.appendChild(title);
 
         // ID de l'horloge (modifiable)
@@ -258,19 +258,19 @@ class UIManager {
 
         // Version PTP
         const versionDiv = document.createElement('div');
-        versionDiv.className = 'mb-4';
+        versionDiv.style.cssText = 'margin-bottom: 8px;';
         versionDiv.innerHTML = `
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-                Version PTP ${this.createTooltip('Choisir entre PTPv1 (IEEE 1588-2002) et PTPv2 (IEEE 1588-2008)')}
+            <label style="display: block; font-size: 10px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; font-family: 'Roboto Mono', monospace;">
+                Version ${this.createTooltip('PTPv1 (IEEE 1588-2002) / PTPv2 (IEEE 1588-2008)')}
             </label>
-            <div class="flex gap-4">
-                <label class="inline-flex items-center">
-                    <input type="radio" name="ptp-version" value="1" ${clock.version === 1 ? 'checked' : ''} class="mr-2">
-                    PTPv1
+            <div style="display: flex; gap: 8px; font-size: 10px;">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                    <input type="radio" name="ptp-version" value="1" ${clock.version === 1 ? 'checked' : ''} style="margin-right: 4px;">
+                    v1
                 </label>
-                <label class="inline-flex items-center">
-                    <input type="radio" name="ptp-version" value="2" ${clock.version === 2 ? 'checked' : ''} class="mr-2">
-                    PTPv2
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                    <input type="radio" name="ptp-version" value="2" ${clock.version === 2 ? 'checked' : ''} style="margin-right: 4px;">
+                    v2
                 </label>
             </div>
         `;
@@ -297,8 +297,8 @@ class UIManager {
 
         // Intervalles de messages PTP
         const intervalsSection = document.createElement('div');
-        intervalsSection.className = 'mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200';
-        intervalsSection.innerHTML = '<h3 class="text-lg font-bold mb-3 text-gray-800">Intervalles de Messages</h3>';
+        intervalsSection.style.cssText = 'margin-bottom: 8px; padding: 6px; background: var(--bg-tertiary); border-radius: 4px; border: 1px solid var(--border-color);';
+        intervalsSection.innerHTML = '<h3 style="font-size: 10px; font-weight: 700; margin-bottom: 6px; color: var(--text-primary); font-family: \'Roboto Mono\', monospace;">Intervalles</h3>';
 
         intervalsSection.appendChild(this.createSliderField('Announce Interval (log2)', 'clock-announce-interval',
             clock.announceInterval, -1, 4,
@@ -314,11 +314,13 @@ class UIManager {
 
         panel.appendChild(intervalsSection);
 
-        // Bouton de sauvegarde
+        // Bouton de sauvegarde compact
         const saveBtn = document.createElement('button');
         saveBtn.id = 'btn-save-config';
-        saveBtn.className = 'w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg mt-6 transition-colors';
-        saveBtn.textContent = 'Enregistrer la Configuration';
+        saveBtn.style.cssText = 'width: 100%; background: var(--color-success); color: white; font-weight: 700; padding: 6px 8px; border-radius: 4px; margin-top: 8px; border: none; cursor: pointer; font-size: 10px; font-family: "Roboto Mono", monospace; transition: opacity 0.2s;';
+        saveBtn.textContent = '💾 Enregistrer';
+        saveBtn.onmouseenter = () => saveBtn.style.opacity = '0.8';
+        saveBtn.onmouseleave = () => saveBtn.style.opacity = '1';
         panel.appendChild(saveBtn);
 
         // Ré-attacher l'écouteur
@@ -336,9 +338,9 @@ class UIManager {
     renderPTPv2Parameters(panel, clock) {
         const section = document.createElement('div');
         section.id = 'bmca-v2-params';
-        section.className = 'mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200';
+        section.style.cssText = 'margin-bottom: 8px; padding: 6px; background: var(--bg-tertiary); border-radius: 4px; border: 1px solid var(--color-primary);';
 
-        section.innerHTML = '<h3 class="text-lg font-bold mb-3 text-blue-800">Paramètres BMCA (PTPv2)</h3>';
+        section.innerHTML = '<h3 style="font-size: 10px; font-weight: 700; margin-bottom: 6px; color: var(--color-primary); font-family: \'Roboto Mono\', monospace;">BMCA v2</h3>';
 
         // priority1
         section.appendChild(this.createSliderField('Priority1', 'clock-priority1', clock.priority1, 0, 255,
@@ -346,37 +348,37 @@ class UIManager {
 
         // clockClass
         const clockClassDiv = document.createElement('div');
-        clockClassDiv.className = 'mb-4';
+        clockClassDiv.style.cssText = 'margin-bottom: 8px;';
         clockClassDiv.innerHTML = `
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-                Clock Class ${this.createTooltip('Indique la qualité et la source de l\'horloge (6 = GPS/Atomique, 248 = Par défaut, 255 = Slave-only)')}
+            <label style="display: block; font-size: 10px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; font-family: 'Roboto Mono', monospace;">
+                Clock Class ${this.createTooltip('Qualité (6=GPS, 248=Défaut, 255=Slave)')}
             </label>
-            <select id="clock-class" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
-                <option value="6" ${clock.clockClass === 6 ? 'selected' : ''}>6 - GM primaire (GPS/Atomique)</option>
-                <option value="7" ${clock.clockClass === 7 ? 'selected' : ''}>7 - GM primaire (Holdover)</option>
-                <option value="52" ${clock.clockClass === 52 ? 'selected' : ''}>52 - GM dégradé A</option>
-                <option value="58" ${clock.clockClass === 58 ? 'selected' : ''}>58 - GM dégradé B</option>
-                <option value="248" ${clock.clockClass === 248 ? 'selected' : ''}>248 - Par défaut</option>
-                <option value="255" ${clock.clockClass === 255 ? 'selected' : ''}>255 - Slave-only (ne peut pas être GM)</option>
+            <select id="clock-class" style="width: 100%; padding: 4px 6px; font-size: 9px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-primary); color: var(--text-primary); font-family: 'Roboto Mono', monospace;">
+                <option value="6" ${clock.clockClass === 6 ? 'selected' : ''}>6-GPS</option>
+                <option value="7" ${clock.clockClass === 7 ? 'selected' : ''}>7-Holdover</option>
+                <option value="52" ${clock.clockClass === 52 ? 'selected' : ''}>52-Dégradé A</option>
+                <option value="58" ${clock.clockClass === 58 ? 'selected' : ''}>58-Dégradé B</option>
+                <option value="248" ${clock.clockClass === 248 ? 'selected' : ''}>248-Défaut</option>
+                <option value="255" ${clock.clockClass === 255 ? 'selected' : ''}>255-Slave only</option>
             </select>
         `;
         section.appendChild(clockClassDiv);
 
         // clockAccuracy
         const accuracyDiv = document.createElement('div');
-        accuracyDiv.className = 'mb-4';
+        accuracyDiv.style.cssText = 'margin-bottom: 8px;';
         accuracyDiv.innerHTML = `
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-                Clock Accuracy ${this.createTooltip('Précision de l\'horloge par rapport à une référence UTC')}
+            <label style="display: block; font-size: 10px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; font-family: 'Roboto Mono', monospace;">
+                Accuracy ${this.createTooltip('Précision UTC')}
             </label>
-            <select id="clock-accuracy" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
-                <option value="0x20" ${clock.clockAccuracy === 0x20 ? 'selected' : ''}>0x20 - &lt; 25ns</option>
-                <option value="0x21" ${clock.clockAccuracy === 0x21 ? 'selected' : ''}>0x21 - &lt; 100ns</option>
-                <option value="0x22" ${clock.clockAccuracy === 0x22 ? 'selected' : ''}>0x22 - &lt; 250ns</option>
-                <option value="0x23" ${clock.clockAccuracy === 0x23 ? 'selected' : ''}>0x23 - &lt; 1μs</option>
-                <option value="0x24" ${clock.clockAccuracy === 0x24 ? 'selected' : ''}>0x24 - &lt; 2.5μs</option>
-                <option value="0x25" ${clock.clockAccuracy === 0x25 ? 'selected' : ''}>0x25 - &lt; 10μs</option>
-                <option value="0xFE" ${clock.clockAccuracy === 0xFE ? 'selected' : ''}>0xFE - Inconnue</option>
+            <select id="clock-accuracy" style="width: 100%; padding: 4px 6px; font-size: 9px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-primary); color: var(--text-primary); font-family: 'Roboto Mono', monospace;">
+                <option value="0x20" ${clock.clockAccuracy === 0x20 ? 'selected' : ''}>&lt;25ns</option>
+                <option value="0x21" ${clock.clockAccuracy === 0x21 ? 'selected' : ''}>&lt;100ns</option>
+                <option value="0x22" ${clock.clockAccuracy === 0x22 ? 'selected' : ''}>&lt;250ns</option>
+                <option value="0x23" ${clock.clockAccuracy === 0x23 ? 'selected' : ''}>&lt;1μs</option>
+                <option value="0x24" ${clock.clockAccuracy === 0x24 ? 'selected' : ''}>&lt;2.5μs</option>
+                <option value="0x25" ${clock.clockAccuracy === 0x25 ? 'selected' : ''}>&lt;10μs</option>
+                <option value="0xFE" ${clock.clockAccuracy === 0xFE ? 'selected' : ''}>Inconnue</option>
             </select>
         `;
         section.appendChild(accuracyDiv);
@@ -426,22 +428,22 @@ class UIManager {
     renderPTPv1Parameters(panel, clock) {
         const section = document.createElement('div');
         section.id = 'bmca-v1-params';
-        section.className = 'mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200';
+        section.style.cssText = 'margin-bottom: 8px; padding: 6px; background: var(--bg-tertiary); border-radius: 4px; border: 1px solid var(--color-passive);';
 
-        section.innerHTML = '<h3 class="text-lg font-bold mb-3 text-purple-800">Paramètres BMCA (PTPv1)</h3>';
+        section.innerHTML = '<h3 style="font-size: 10px; font-weight: 700; margin-bottom: 6px; color: var(--color-passive); font-family: \'Roboto Mono\', monospace;">BMCA v1</h3>';
 
         // Stratum
         const stratumDiv = document.createElement('div');
-        stratumDiv.className = 'mb-4';
+        stratumDiv.style.cssText = 'margin-bottom: 8px;';
         stratumDiv.innerHTML = `
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-                Stratum ${this.createTooltip('Niveau de qualité de l\'horloge (1 = référence primaire, 4 = qualité faible)')}
+            <label style="display: block; font-size: 10px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; font-family: 'Roboto Mono', monospace;">
+                Stratum ${this.createTooltip('Qualité (1=primaire, 4=faible)')}
             </label>
-            <select id="clock-stratum" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500">
-                <option value="1" ${clock.stratum === 1 ? 'selected' : ''}>1 - Référence primaire (GPS, Atomique)</option>
-                <option value="2" ${clock.stratum === 2 ? 'selected' : ''}>2 - Référence secondaire</option>
-                <option value="3" ${clock.stratum === 3 ? 'selected' : ''}>3 - Synchronisé</option>
-                <option value="4" ${clock.stratum === 4 ? 'selected' : ''}>4 - Non synchronisé</option>
+            <select id="clock-stratum" style="width: 100%; padding: 4px 6px; font-size: 9px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-primary); color: var(--text-primary); font-family: 'Roboto Mono', monospace;">
+                <option value="1" ${clock.stratum === 1 ? 'selected' : ''}>1-Primaire</option>
+                <option value="2" ${clock.stratum === 2 ? 'selected' : ''}>2-Secondaire</option>
+                <option value="3" ${clock.stratum === 3 ? 'selected' : ''}>3-Sync</option>
+                <option value="4" ${clock.stratum === 4 ? 'selected' : ''}>4-Non sync</option>
             </select>
         `;
         section.appendChild(stratumDiv);
@@ -1022,29 +1024,29 @@ class UIManager {
 
     createInputField(label, id, value, type = 'text', tooltip = '') {
         const div = document.createElement('div');
-        div.className = 'mb-4';
+        div.style.cssText = 'margin-bottom: 8px;';
         div.innerHTML = `
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+            <label style="display: block; font-size: 10px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; font-family: 'Roboto Mono', monospace;">
                 ${label} ${tooltip ? this.createTooltip(tooltip) : ''}
             </label>
             <input type="${type}" id="${id}" value="${value}"
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                   style="width: 100%; padding: 4px 6px; font-size: 10px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-primary); color: var(--text-primary); font-family: 'Roboto Mono', monospace;">
         `;
         return div;
     }
 
     createSliderField(label, id, value, min, max, tooltip = '') {
         const div = document.createElement('div');
-        div.className = 'mb-4';
+        div.style.cssText = 'margin-bottom: 8px;';
         div.innerHTML = `
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+            <label style="display: block; font-size: 10px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; font-family: 'Roboto Mono', monospace;">
                 ${label} ${tooltip ? this.createTooltip(tooltip) : ''}
             </label>
-            <div class="flex items-center gap-3">
+            <div style="display: flex; align-items: center; gap: 6px;">
                 <input type="range" id="${id}" value="${value}" min="${min}" max="${max}"
-                       class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                       style="flex: 1; height: 4px; background: var(--bg-tertiary); border-radius: 2px; cursor: pointer;"
                        oninput="document.getElementById('${id}-value').textContent = this.value">
-                <span id="${id}-value" class="text-sm font-bold text-gray-700 min-w-[4rem] text-right">${value}</span>
+                <span id="${id}-value" style="font-size: 10px; font-weight: 700; color: var(--text-primary); min-width: 32px; text-align: right; font-family: 'Roboto Mono', monospace;">${value}</span>
             </div>
         `;
         return div;
@@ -1052,12 +1054,12 @@ class UIManager {
 
     createInfoField(label, value, tooltip = '') {
         const div = document.createElement('div');
-        div.className = 'mb-4 p-3 bg-gray-100 rounded-md';
+        div.style.cssText = 'margin-bottom: 8px; padding: 6px; background: var(--bg-tertiary); border-radius: 4px; border: 1px solid var(--border-color);';
         div.innerHTML = `
-            <label class="block text-sm font-medium text-gray-700 mb-1">
+            <label style="display: block; font-size: 9px; font-weight: 600; color: var(--text-tertiary); margin-bottom: 2px; font-family: 'Roboto Mono', monospace;">
                 ${label} ${tooltip ? this.createTooltip(tooltip) : ''}
             </label>
-            <div class="text-sm font-mono text-gray-800">${value}</div>
+            <div style="font-size: 10px; font-family: 'Roboto Mono', monospace; color: var(--text-primary); font-weight: 500;">${value}</div>
         `;
         return div;
     }
