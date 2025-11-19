@@ -90,7 +90,7 @@ class PTPTutorial {
     start() {
         this.isActive = true;
         this.currentStep = 0;
-        this.createOverlay();
+        this.createInlinePanel();
         this.showStep();
     }
 
@@ -103,21 +103,45 @@ class PTPTutorial {
         this.removeHighlights();
     }
 
-    createOverlay() {
+    createInlinePanel() {
+        // Create inline tutorial panel instead of blocking overlay
         this.overlay = document.createElement('div');
-        this.overlay.id = 'tutorial-overlay';
+        this.overlay.id = 'tutorial-panel';
         this.overlay.style.cssText = `
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 9998;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            top: 80px;
+            right: 20px;
+            width: 380px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            background: var(--bg-primary);
+            border: 3px solid var(--color-warning);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease-out;
         `;
+
+        // Add slide-in animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        if (!document.getElementById('tutorial-animation-style')) {
+            style.id = 'tutorial-animation-style';
+            document.head.appendChild(style);
+        }
+
         document.body.appendChild(this.overlay);
     }
 
@@ -132,53 +156,52 @@ class PTPTutorial {
         // Remove old highlights
         this.removeHighlights();
 
-        // Highlight element if specified
+        // Highlight element if specified (with subtle highlight, no z-index to avoid blocking)
         if (step.highlight) {
             const element = document.querySelector(step.highlight);
             if (element) {
-                element.style.position = 'relative';
-                element.style.zIndex = '9999';
-                element.style.boxShadow = '0 0 0 4px var(--color-warning), 0 0 20px rgba(217, 119, 6, 0.5)';
+                element.style.boxShadow = '0 0 0 3px var(--color-warning), 0 0 15px rgba(217, 119, 6, 0.4)';
                 element.style.borderRadius = '8px';
+                element.style.transition = 'box-shadow 0.3s ease';
+                // Scroll element into view smoothly
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
 
-        // Create tutorial box
-        const tutorialBox = document.createElement('div');
-        tutorialBox.id = 'tutorial-box';
-        tutorialBox.style.cssText = `
-            background: var(--bg-primary);
-            border: 3px solid var(--color-warning);
-            border-radius: 12px;
-            padding: 30px;
-            max-width: 500px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            text-align: center;
-            z-index: 10000;
-        `;
-
-        tutorialBox.innerHTML = `
-            <h2 style="color: var(--color-warning); margin-bottom: 20px; font-size: 24px;">
-                ${step.title}
-            </h2>
-            <p style="color: var(--text-primary); margin-bottom: 30px; font-size: 16px; line-height: 1.6;">
-                ${step.message}
-            </p>
-            <div style="display: flex; gap: 10px; justify-content: center;">
-                ${this.currentStep > 0 ? '<button id="tutorial-prev" style="background: var(--color-passive); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold;">Précédent</button>' : ''}
-                ${this.currentStep < this.steps.length - 1 ? '<button id="tutorial-next" style="background: var(--color-success); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold;">Suivant</button>' : '<button id="tutorial-finish" style="background: var(--color-master); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold;">Terminer</button>'}
-                <button id="tutorial-skip" style="background: var(--color-error); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold;">Quitter</button>
+        // Update panel content
+        this.overlay.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="color: var(--color-warning); margin: 0; font-size: 18px; font-weight: bold;">
+                    🎓 Tutoriel PTP
+                </h2>
+                <button id="tutorial-skip" style="background: none; border: none; color: var(--text-tertiary); cursor: pointer; font-size: 24px; line-height: 1; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s;" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='none'">×</button>
             </div>
-            <div style="margin-top: 20px; color: var(--text-tertiary); font-size: 12px;">
-                Étape ${this.currentStep + 1} / ${this.steps.length}
+
+            <div style="background: var(--bg-secondary); border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                <div style="color: var(--color-info); font-size: 12px; font-weight: bold; margin-bottom: 8px;">
+                    ÉTAPE ${this.currentStep + 1} / ${this.steps.length}
+                </div>
+                <h3 style="color: var(--text-primary); margin-bottom: 10px; font-size: 16px; font-weight: bold;">
+                    ${step.title}
+                </h3>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 14px; line-height: 1.6;">
+                    ${step.message}
+                </p>
+            </div>
+
+            <div style="display: flex; gap: 8px; justify-content: space-between;">
+                ${this.currentStep > 0 ? '<button id="tutorial-prev" style="background: var(--color-passive); color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; flex: 1;">← Précédent</button>' : '<div style="flex: 1;"></div>'}
+                ${this.currentStep < this.steps.length - 1 ? '<button id="tutorial-next" style="background: var(--color-success); color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; flex: 1;">Suivant →</button>' : '<button id="tutorial-finish" style="background: var(--color-master); color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; flex: 1;">✓ Terminer</button>'}
+            </div>
+
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color);">
+                <div style="display: flex; gap: 4px; justify-content: center;">
+                    ${this.steps.map((_, i) => `
+                        <div style="width: ${100 / this.steps.length}%; height: 4px; background: ${i === this.currentStep ? 'var(--color-warning)' : i < this.currentStep ? 'var(--color-success)' : 'var(--border-color)'}; border-radius: 2px; transition: all 0.3s;"></div>
+                    `).join('')}
+                </div>
             </div>
         `;
-
-        // Remove old box
-        const oldBox = document.getElementById('tutorial-box');
-        if (oldBox) oldBox.remove();
-
-        this.overlay.appendChild(tutorialBox);
 
         // Add event listeners
         const nextBtn = document.getElementById('tutorial-next');
@@ -189,7 +212,7 @@ class PTPTutorial {
         if (nextBtn) {
             nextBtn.addEventListener('click', () => {
                 if (step.validate && !step.validate()) {
-                    alert('Veuillez compléter cette étape avant de continuer.');
+                    this.showValidationMessage('Veuillez compléter cette étape avant de continuer.');
                     return;
                 }
                 this.nextStep();
@@ -214,6 +237,44 @@ class PTPTutorial {
         }
     }
 
+    showValidationMessage(message) {
+        // Show validation message in the panel
+        const messageEl = document.createElement('div');
+        messageEl.style.cssText = `
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--color-warning);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 10001;
+            animation: shake 0.5s;
+        `;
+        messageEl.textContent = message;
+
+        // Add shake animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translate(-50%, -50%) translateX(0); }
+                25% { transform: translate(-50%, -50%) translateX(-10px); }
+                75% { transform: translate(-50%, -50%) translateX(10px); }
+            }
+        `;
+        if (!document.getElementById('shake-animation-style')) {
+            style.id = 'shake-animation-style';
+            document.head.appendChild(style);
+        }
+
+        document.body.appendChild(messageEl);
+        setTimeout(() => messageEl.remove(), 2000);
+    }
+
     nextStep() {
         this.currentStep++;
         this.showStep();
@@ -225,10 +286,13 @@ class PTPTutorial {
     }
 
     removeHighlights() {
-        document.querySelectorAll('[style*="z-index: 9999"]').forEach(el => {
-            el.style.position = '';
-            el.style.zIndex = '';
-            el.style.boxShadow = '';
+        document.querySelectorAll('[style*="box-shadow"]').forEach(el => {
+            // Only remove if it's a tutorial highlight (contains color-warning)
+            if (el.style.boxShadow && el.style.boxShadow.includes('217, 119, 6')) {
+                el.style.boxShadow = '';
+                el.style.borderRadius = '';
+                el.style.transition = '';
+            }
         });
     }
 }

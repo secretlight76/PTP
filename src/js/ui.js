@@ -55,12 +55,7 @@ class UIManager {
                 this.contextualHelp = new ContextualHelp();
                 console.log('[PTP] ✓ ContextualHelp initialized');
 
-                // Add progress guide (can be hidden by user)
-                setTimeout(() => {
-                    const guide = this.contextualHelp.addProgressGuide();
-                    document.body.appendChild(guide);
-                    console.log('[PTP] ✓ Progress guide added');
-                }, 1000);
+                // Progress guide removed - was annoying on page load
             } else {
                 console.error('[PTP] ✗ ContextualHelp class not found!');
             }
@@ -698,8 +693,7 @@ class UIManager {
                     setTimeout(() => confetti.starRain(2000), 500);
                 }
 
-                // Afficher une notification claire du résultat (5 secondes)
-                this.showNotification(`🎉 GRANDMASTER ÉLU : ${gm.id}`, 'success', 5000);
+                // Notification removed - was hidden and useless
             }
         } catch (error) {
             console.error('Erreur lors de la simulation BMCA:', error);
@@ -764,6 +758,12 @@ class UIManager {
         const delay = ((t2 - t1) + (t4 - t3)) / 2;
         if (this.performanceCharts) {
             this.performanceCharts.addDataPoint(offset, delay);
+
+            // Auto-expand performance section to show the charts
+            const performanceSection = document.getElementById('performance-section');
+            if (performanceSection && performanceSection.classList.contains('collapsed')) {
+                toggleSection('performance-section');
+            }
         }
 
         this.setButtonsEnabled(true);

@@ -297,44 +297,204 @@
             </div>
             <div id="about-section" class="collapsible-content collapsed">
                 <div class="content-inner">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <h3 class="font-bold mb-1 text-xs" style="color: var(--color-primary);">Qu'est-ce que le PTP ?</h3>
-                            <p class="text-xs" style="color: var(--text-secondary);">
-                                Le <strong>Precision Time Protocol</strong> (IEEE 1588) permet une synchronisation temporelle
-                                de précision nanoseconde sur Ethernet.
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- PTP Introduction -->
+                        <div class="glass-card p-4 rounded-lg">
+                            <h3 class="font-bold mb-2 text-sm flex items-center gap-2" style="color: var(--color-primary);">
+                                <span>⏰</span> Qu'est-ce que le PTP ?
+                            </h3>
+                            <p class="text-xs mb-2" style="color: var(--text-secondary); line-height: 1.6;">
+                                Le <strong>Precision Time Protocol (IEEE 1588)</strong> est un protocole de synchronisation temporelle
+                                qui permet d'obtenir une précision <strong>sub-microseconde</strong> (jusqu'à quelques nanosecondes)
+                                sur des réseaux Ethernet standards.
+                            </p>
+                            <p class="text-xs" style="color: var(--text-tertiary); line-height: 1.5;">
+                                Contrairement à NTP (précision ~1-10ms), PTP offre une précision de <strong>&lt;1µs</strong>
+                                grâce à des timestamps hardware et la compensation des délais réseau.
                             </p>
                         </div>
 
-                        <div>
-                            <h3 class="font-bold mb-1 text-xs" style="color: var(--color-passive);">Qu'est-ce que le BMCA ?</h3>
-                            <p class="text-xs" style="color: var(--text-secondary);">
-                                Le <strong>Best Master Clock Algorithm</strong> détermine quelle horloge
-                                devient le <strong>Grandmaster</strong> selon une hiérarchie stricte.
+                        <!-- BMCA Explanation -->
+                        <div class="glass-card p-4 rounded-lg">
+                            <h3 class="font-bold mb-2 text-sm flex items-center gap-2" style="color: var(--color-passive);">
+                                <span>🏆</span> L'algorithme BMCA
+                            </h3>
+                            <p class="text-xs mb-2" style="color: var(--text-secondary); line-height: 1.6;">
+                                Le <strong>Best Master Clock Algorithm</strong> est un algorithme déterministe qui élit
+                                automatiquement la meilleure horloge comme <strong>Grandmaster</strong>.
+                            </p>
+                            <p class="text-xs" style="color: var(--text-tertiary); line-height: 1.5;">
+                                Il compare les horloges selon 6 critères stricts (priority1, clockClass, accuracy, variance,
+                                priority2, clockID). La première différence rencontrée décide du gagnant.
                             </p>
                         </div>
 
-                        <div>
-                            <h3 class="font-bold mb-1 text-xs" style="color: var(--color-success);">Types d'Horloges</h3>
-                            <ul class="text-xs space-y-0 list-disc list-inside" style="color: var(--text-secondary);">
-                                <li><strong>OC</strong> : Ordinary Clock</li>
-                                <li><strong>BC</strong> : Boundary Clock</li>
-                                <li><strong>TC</strong> : Transparent Clock</li>
-                                <li><strong>GM</strong> : Grandmaster</li>
+                        <!-- Clock Types -->
+                        <div class="glass-card p-4 rounded-lg">
+                            <h3 class="font-bold mb-2 text-sm flex items-center gap-2" style="color: var(--color-success);">
+                                <span>🕐</span> Types d'Horloges PTP
+                            </h3>
+                            <div class="space-y-2 text-xs" style="color: var(--text-secondary);">
+                                <div>
+                                    <strong style="color: var(--color-master);">OC (Ordinary Clock)</strong><br>
+                                    <span style="color: var(--text-tertiary);">Horloge simple avec un seul port. Peut être Master ou Slave.</span>
+                                </div>
+                                <div>
+                                    <strong style="color: var(--color-passive);">BC (Boundary Clock)</strong><br>
+                                    <span style="color: var(--text-tertiary);">Switch PTP avec plusieurs ports. Participe au BMCA, régénère les timestamps.</span>
+                                </div>
+                                <div>
+                                    <strong style="color: var(--color-info);">TC (Transparent Clock)</strong><br>
+                                    <span style="color: var(--text-tertiary);">Switch qui corrige les délais mais ne participe pas au BMCA.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- BMCA Criteria -->
+                        <div class="glass-card p-4 rounded-lg">
+                            <h3 class="font-bold mb-2 text-sm flex items-center gap-2" style="color: var(--color-warning);">
+                                <span>📋</span> Critères BMCA (ordre)
+                            </h3>
+                            <ol class="text-xs space-y-1" style="color: var(--text-secondary); line-height: 1.5;">
+                                <li><strong>1. priority1</strong> - Priorité admin (0-255, plus petit gagne)</li>
+                                <li><strong>2. clockClass</strong> - Qualité source (6=GPS, 248=défaut)</li>
+                                <li><strong>3. clockAccuracy</strong> - Précision temporelle (&lt;25ns à &gt;10s)</li>
+                                <li><strong>4. variance</strong> - Stabilité/jitter (plus petit = stable)</li>
+                                <li><strong>5. priority2</strong> - Priorité secondaire (rarement utilisé)</li>
+                                <li><strong>6. clockIdentity</strong> - MAC address (tie-breaker final)</li>
+                            </ol>
+                        </div>
+
+                        <!-- Use Cases -->
+                        <div class="glass-card p-4 rounded-lg">
+                            <h3 class="font-bold mb-2 text-sm flex items-center gap-2" style="color: var(--color-info);">
+                                <span>🏭</span> Cas d'Usage PTP
+                            </h3>
+                            <div class="space-y-2 text-xs" style="color: var(--text-secondary);">
+                                <div>
+                                    <strong>Télécom & 5G:</strong><br>
+                                    <span style="color: var(--text-tertiary);">Synchronisation phase et fréquence des stations de base</span>
+                                </div>
+                                <div>
+                                    <strong>Industrie 4.0:</strong><br>
+                                    <span style="color: var(--text-tertiary);">Automatisation temps-réel, TSN (Time-Sensitive Networking)</span>
+                                </div>
+                                <div>
+                                    <strong>Finance:</strong><br>
+                                    <span style="color: var(--text-tertiary);">Horodatage précis des transactions (MiFID II)</span>
+                                </div>
+                                <div>
+                                    <strong>Audiovisuel:</strong><br>
+                                    <span style="color: var(--text-tertiary);">Synchronisation caméras, broadcast (SMPTE 2059)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PTP Messages -->
+                        <div class="glass-card p-4 rounded-lg">
+                            <h3 class="font-bold mb-2 text-sm flex items-center gap-2" style="color: var(--color-success);">
+                                <span>📨</span> Messages PTP
+                            </h3>
+                            <div class="space-y-2 text-xs" style="color: var(--text-secondary);">
+                                <div>
+                                    <strong style="color: var(--color-master);">Announce (2s)</strong><br>
+                                    <span style="color: var(--text-tertiary);">Contient les paramètres BMCA pour l'élection</span>
+                                </div>
+                                <div>
+                                    <strong style="color: var(--color-info);">Sync (~1s)</strong><br>
+                                    <span style="color: var(--text-tertiary);">Timestamp t₁ du Master pour calcul d'offset</span>
+                                </div>
+                                <div>
+                                    <strong style="color: var(--color-passive);">Delay_Req/Resp</strong><br>
+                                    <span style="color: var(--text-tertiary);">Mesure du délai réseau (round-trip)</span>
+                                </div>
+                                <div>
+                                    <strong>Follow_Up</strong><br>
+                                    <span style="color: var(--text-tertiary);">Timestamp précis t₁ (si two-step clock)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Versions PTPv1 vs PTPv2 -->
+                        <div class="glass-card p-4 rounded-lg">
+                            <h3 class="font-bold mb-2 text-sm flex items-center gap-2" style="color: var(--color-primary);">
+                                <span>🔄</span> PTPv1 vs PTPv2
+                            </h3>
+                            <div class="text-xs" style="color: var(--text-secondary);">
+                                <div class="mb-2">
+                                    <strong>PTPv1 (IEEE 1588-2002)</strong>
+                                    <ul class="mt-1 ml-4 list-disc" style="color: var(--text-tertiary);">
+                                        <li>3 critères BMCA seulement</li>
+                                        <li>Moins flexible</li>
+                                        <li>Obsolète depuis 2008</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <strong>PTPv2 (IEEE 1588-2008/2019)</strong>
+                                    <ul class="mt-1 ml-4 list-disc" style="color: var(--text-tertiary);">
+                                        <li>6 critères BMCA complets</li>
+                                        <li>Domaines PTP (isolation)</li>
+                                        <li>Profiles (telecom, power, automotive...)</li>
+                                        <li>Standard actuel recommandé</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Key Formulas -->
+                        <div class="glass-card p-4 rounded-lg">
+                            <h3 class="font-bold mb-2 text-sm flex items-center gap-2" style="color: var(--color-warning);">
+                                <span>📐</span> Formules Clés
+                            </h3>
+                            <div class="text-xs font-mono" style="color: var(--text-secondary); line-height: 1.8;">
+                                <div class="mb-2">
+                                    <strong style="color: var(--color-info);">Offset:</strong><br>
+                                    <code style="background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px;">
+                                        [(t₂ - t₁) - (t₄ - t₃)] / 2
+                                    </code>
+                                </div>
+                                <div class="mb-2">
+                                    <strong style="color: var(--color-success);">Délai:</strong><br>
+                                    <code style="background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px;">
+                                        [(t₂ - t₁) + (t₄ - t₃)] / 2
+                                    </code>
+                                </div>
+                                <div style="color: var(--text-tertiary); font-size: 11px;">
+                                    t₁ = Envoi Sync (Master)<br>
+                                    t₂ = Réception Sync (Slave)<br>
+                                    t₃ = Envoi Delay_Req (Slave)<br>
+                                    t₄ = Réception Delay_Req (Master)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Best Practices -->
+                        <div class="glass-card p-4 rounded-lg">
+                            <h3 class="font-bold mb-2 text-sm flex items-center gap-2" style="color: var(--color-success);">
+                                <span>✅</span> Bonnes Pratiques
+                            </h3>
+                            <ul class="text-xs space-y-1 list-disc ml-4" style="color: var(--text-secondary); line-height: 1.5;">
+                                <li>Toujours utiliser <strong>PTPv2</strong> (IEEE 1588-2008)</li>
+                                <li>Activer les <strong>timestamps hardware</strong> sur les switches</li>
+                                <li>Configurer priority1=0 pour le GM principal</li>
+                                <li>Utiliser clockClass=6 pour sources GPS/Atomiques</li>
+                                <li>Déployer des BC aux frontières de domaines</li>
+                                <li>Monitorer offset/delay en continu</li>
+                                <li>Prévoir une redondance GM (BMCA failover auto)</li>
                             </ul>
                         </div>
 
-                        <div>
-                            <h3 class="font-bold mb-1 text-xs" style="color: var(--color-warning);">Critères BMCA (PTPv2)</h3>
-                            <ol class="text-xs space-y-0 list-decimal list-inside" style="color: var(--text-secondary);">
-                                <li>priority1</li>
-                                <li>clockClass</li>
-                                <li>clockAccuracy</li>
-                                <li>variance</li>
-                                <li>priority2</li>
-                                <li>clockIdentity</li>
-                            </ol>
-                        </div>
+                    </div>
+
+                    <!-- Footer info -->
+                    <div class="mt-6 p-4 rounded-lg" style="background: var(--bg-tertiary); border-left: 4px solid var(--color-info);">
+                        <p class="text-xs" style="color: var(--text-secondary); line-height: 1.6;">
+                            <strong style="color: var(--color-primary);">ℹ️ À propos de ce simulateur:</strong>
+                            Cet outil pédagogique vous permet d'expérimenter le PTP et le BMCA de manière interactive.
+                            Créez différentes topologies, modifiez les paramètres BMCA, et observez en temps réel
+                            comment l'algorithme sélectionne le Grandmaster. Parfait pour l'apprentissage et la formation
+                            sur IEEE 1588 v1/v2.
+                        </p>
                     </div>
                 </div>
             </div>
