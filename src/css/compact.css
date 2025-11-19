@@ -1,0 +1,500 @@
+/**
+ * compact.css - Styles compacts et professionnels pour réduire le scroll
+ * Design épuré, espacements réduits, look professionnel
+ */
+
+/* ========== VARIABLES PROFESSIONNELLES ========== */
+:root {
+    /* Espacements réduits */
+    --spacing-xs: 2px;
+    --spacing-sm: 4px;
+    --spacing-md: 8px;
+    --spacing-lg: 12px;
+    --spacing-xl: 16px;
+
+    /* Hauteurs fixes pour optimisation */
+    --header-height: 50px;
+    --panel-max-height: calc(100vh - 120px);
+}
+
+/* ========== RESET & OPTIMISATIONS ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow-x: hidden;
+    line-height: 1.4;
+}
+
+/* ========== HEADER COMPACT ========== */
+header {
+    padding: var(--spacing-md) var(--spacing-xl) !important;
+    margin-bottom: var(--spacing-lg) !important;
+}
+
+header h1 {
+    font-size: 1.25rem !important;
+    line-height: 1.2 !important;
+    margin-bottom: var(--spacing-xs) !important;
+}
+
+header .subtitle {
+    font-size: 0.75rem !important;
+    margin-top: var(--spacing-xs) !important;
+}
+
+/* Guide info compact */
+.info-banner {
+    padding: var(--spacing-md) !important;
+    margin-bottom: var(--spacing-md) !important;
+}
+
+.info-banner p {
+    font-size: 0.75rem !important;
+    line-height: 1.3 !important;
+}
+
+.info-banner button {
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+    font-size: 0.75rem !important;
+}
+
+/* ========== PANNEAUX COMPACTS ========== */
+.panel {
+    padding: var(--spacing-lg) !important;
+    margin-bottom: var(--spacing-lg) !important;
+}
+
+.panel h2 {
+    font-size: 1rem !important;
+    margin-bottom: var(--spacing-md) !important;
+    padding-bottom: var(--spacing-sm) !important;
+}
+
+.panel h3 {
+    font-size: 0.875rem !important;
+    margin-bottom: var(--spacing-sm) !important;
+}
+
+/* Réduire les hauteurs max */
+#config-panel {
+    max-height: 400px !important;
+}
+
+#topology-container {
+    max-height: 450px !important;
+}
+
+#log-panel,
+#explanation-panel {
+    max-height: 400px !important;
+}
+
+/* ========== TOPOLOGIE RÉSEAU VISUELLE - MASQUER PAR DÉFAUT ========== */
+#network-topology-panel {
+    max-height: 300px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+#network-topology-panel.collapsed {
+    max-height: 0;
+}
+
+/* ========== BOUTONS ULTRA-COMPACTS ========== */
+button {
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+    font-size: 0.75rem !important;
+    line-height: 1.2 !important;
+}
+
+button.btn-lg {
+    padding: var(--spacing-md) var(--spacing-lg) !important;
+    font-size: 0.875rem !important;
+}
+
+/* Grille de boutons */
+.button-grid {
+    gap: var(--spacing-sm) !important;
+}
+
+.button-grid button {
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+}
+
+/* ========== CARTES D'HORLOGES ULTRA-COMPACTES ========== */
+.clock-card {
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+    margin-bottom: var(--spacing-xs) !important;
+}
+
+.clock-card .text-sm {
+    font-size: 0.75rem !important;
+}
+
+.clock-card .text-xs {
+    font-size: 0.65rem !important;
+}
+
+/* ========== FORMULAIRES COMPACTS ========== */
+.form-group,
+.mb-4 {
+    margin-bottom: var(--spacing-md) !important;
+}
+
+.mb-6 {
+    margin-bottom: var(--spacing-lg) !important;
+}
+
+label {
+    font-size: 0.75rem !important;
+    margin-bottom: var(--spacing-xs) !important;
+}
+
+input,
+select,
+textarea {
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+    font-size: 0.75rem !important;
+}
+
+/* ========== SECTIONS PÉDAGOGIQUES - COLLAPSIBLES ========== */
+.collapsible-section {
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    margin-bottom: var(--spacing-md);
+    overflow: hidden;
+}
+
+.collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: var(--bg-secondary);
+    cursor: pointer;
+    user-select: none;
+}
+
+.collapsible-header:hover {
+    background: var(--bg-tertiary);
+}
+
+.collapsible-header h3 {
+    font-size: 0.875rem !important;
+    margin: 0 !important;
+}
+
+.collapsible-content {
+    max-height: 600px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.collapsible-content.collapsed {
+    max-height: 0;
+}
+
+.collapsible-content .content-inner {
+    padding: var(--spacing-md);
+}
+
+/* ========== GRAPHIQUES COMPACTS ========== */
+.performance-chart {
+    padding: var(--spacing-md) !important;
+}
+
+.performance-chart h3 {
+    font-size: 0.8rem !important;
+    margin-bottom: var(--spacing-sm) !important;
+}
+
+.performance-chart canvas {
+    height: 120px !important;
+}
+
+/* ========== TEXTES COMPACTS ========== */
+p {
+    font-size: 0.8rem !important;
+    line-height: 1.4 !important;
+    margin-bottom: var(--spacing-md) !important;
+}
+
+.text-sm {
+    font-size: 0.75rem !important;
+}
+
+.text-xs {
+    font-size: 0.65rem !important;
+}
+
+/* ========== LOGS COMPACTS ========== */
+.log-line {
+    padding: 1px 0 !important;
+    font-size: 0.7rem !important;
+    line-height: 1.3 !important;
+}
+
+/* ========== TABS COMPACTS ========== */
+.tab-button {
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+    font-size: 0.75rem !important;
+}
+
+/* ========== GRILLE RESPONSIVE OPTIMISÉE ========== */
+@media (min-width: 1024px) {
+    .grid-cols-3 {
+        grid-template-columns: 280px 1fr 320px !important;
+    }
+}
+
+/* ========== SCROLLBARS FINS ========== */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+}
+
+/* ========== TABLES COMPACTES ========== */
+table {
+    font-size: 0.75rem !important;
+}
+
+table th,
+table td {
+    padding: var(--spacing-sm) !important;
+}
+
+/* ========== NOTIFICATIONS COMPACTES ========== */
+.notification {
+    padding: var(--spacing-md) !important;
+    font-size: 0.8rem !important;
+}
+
+/* ========== TOOLTIPS COMPACTS ========== */
+.rich-tooltip {
+    max-width: 300px !important;
+    font-size: 0.75rem !important;
+}
+
+.rich-tooltip h4 {
+    font-size: 0.875rem !important;
+}
+
+/* ========== BANNIÈRES COMPACTES ========== */
+.banner {
+    padding: var(--spacing-lg) !important;
+}
+
+.banner h2 {
+    font-size: 1.25rem !important;
+}
+
+.banner p {
+    font-size: 0.8rem !important;
+}
+
+/* ========== FOOTER COMPACT ========== */
+footer {
+    padding: var(--spacing-lg) !important;
+    margin-top: var(--spacing-lg) !important;
+}
+
+footer p {
+    font-size: 0.7rem !important;
+}
+
+/* ========== DESIGN PROFESSIONNEL ========== */
+
+/* Couleurs plus sobres */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(8px) !important;
+}
+
+[data-theme="dark"] .glass-panel {
+    background: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Ombres plus subtiles */
+.shadow-lg {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+.shadow-xl {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Bordures plus fines */
+.border {
+    border-width: 1px !important;
+}
+
+/* Coins moins arrondis */
+.rounded-lg {
+    border-radius: 6px !important;
+}
+
+.rounded {
+    border-radius: 4px !important;
+}
+
+/* ========== HIDE ELEMENTS ON SMALL SCREENS ========== */
+@media (max-width: 1280px) {
+    #network-topology-panel {
+        display: none;
+    }
+}
+
+/* ========== PERFORMANCE OPTIMIZATIONS ========== */
+.smooth-transition {
+    transition: all 0.2s ease !important;
+}
+
+/* Réduire les animations pour performances */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ========== ACCORDIONS POUR SECTIONS PÉDAGOGIQUES ========== */
+.accordion-section {
+    margin-bottom: var(--spacing-sm);
+}
+
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.accordion-header:hover {
+    background: var(--bg-tertiary);
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    border: 0 solid var(--border-color);
+    border-top: 0;
+}
+
+.accordion-content.open {
+    max-height: 1000px;
+    border-width: 0 1px 1px 1px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.accordion-inner {
+    padding: var(--spacing-md);
+    font-size: 0.75rem;
+}
+
+/* ========== COMPACT MODE FORCÉ ========== */
+.compact-mode .panel {
+    padding: var(--spacing-md) !important;
+}
+
+.compact-mode h1 {
+    font-size: 1.1rem !important;
+}
+
+.compact-mode h2 {
+    font-size: 0.9rem !important;
+}
+
+.compact-mode h3 {
+    font-size: 0.8rem !important;
+}
+
+.compact-mode p,
+.compact-mode div {
+    font-size: 0.75rem !important;
+}
+
+/* ========== STICKY HEADERS ========== */
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg-primary);
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* ========== LAYOUT OPTIMISÉ 3 COLONNES ========== */
+@media (min-width: 1024px) {
+    .main-grid {
+        display: grid;
+        grid-template-columns: 260px 1fr 300px;
+        gap: var(--spacing-md);
+        max-width: 100%;
+        margin: 0 auto;
+    }
+}
+
+/* ========== PROFESSIONAL THEME TWEAKS ========== */
+:root {
+    --color-primary: #2563eb;
+    --color-success: #059669;
+    --color-warning: #d97706;
+    --color-error: #dc2626;
+    --color-info: #0891b2;
+}
+
+/* Boutons plus sobres */
+button {
+    box-shadow: none !important;
+    border: 1px solid transparent;
+}
+
+button:hover {
+    border-color: currentColor;
+    opacity: 0.9;
+}
+
+/* Cards plus épurées */
+.glass-card {
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary) !important;
+}
+
+/* ========== HIDE DECORATIVE ELEMENTS ========== */
+.decorative-only {
+    display: none !important;
+}
+
+/* ========== COMPACT DEVICE COUNTER ========== */
+#device-count {
+    font-size: 0.7rem;
+    font-weight: 600;
+}
