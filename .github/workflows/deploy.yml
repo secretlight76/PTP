@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - claude/improve-ptp-educational-tool-01Ah5W4e2tSBx4y7oXtUpqrP
 
 jobs:
   deploy:
