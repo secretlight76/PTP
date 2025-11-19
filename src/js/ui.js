@@ -171,12 +171,18 @@ class UIManager {
         // Ajouter à la simulation
         this.simulation.addClock(newClock);
 
-        // Ajouter à l'interface
-        this.renderClockCard(newClock);
-
         // Ajouter à la topologie visuelle
         if (this.topology) {
             this.topology.addClock(newClock);
+        }
+
+        // Mettre à jour le compteur de devices
+        this.updateDeviceCount();
+
+        // Auto-expand la section topologie pour montrer le nouveau device
+        const topologySection = document.getElementById('network-topology-section');
+        if (topologySection && topologySection.classList.contains('collapsed')) {
+            toggleSection('network-topology-section');
         }
 
         // Sélectionner automatiquement la nouvelle horloge
@@ -184,59 +190,21 @@ class UIManager {
     }
 
     /**
-     * Rend une carte d'horloge COMPACTE dans le panneau 2
-     */
-    renderClockCard(clock) {
-        const container = document.getElementById('topology-container');
-
-        const card = document.createElement('div');
-        card.id = `clock-card-${clock.id}`;
-        card.className = 'clock-card glass-card rounded shadow-sm p-2 cursor-pointer border smooth-transition hover-scale';
-        card.style.borderColor = 'var(--border-color)';
-        card.onclick = () => this.selectClock(clock);
-
-        card.innerHTML = `
-            <div class="flex items-center justify-between gap-2">
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-1">
-                        <span class="text-sm font-bold truncate" style="color: var(--text-primary);" title="${clock.id}">${this.getClockIcon(clock)} ${clock.id}</span>
-                        <span class="text-xs px-1 rounded" style="background-color: var(--bg-tertiary); color: var(--text-secondary);">v${clock.version}</span>
-                    </div>
-                    <div class="text-xs mt-0.5" style="color: var(--text-tertiary);">
-                        <span id="clock-state-${clock.id}" style="${this.getStateColor(clock.state)}">${clock.state}</span>
-                        <span style="color: var(--text-muted);"> • D${clock.domain}</span>
-                    </div>
-                </div>
-                <button class="btn-remove-clock text-sm font-bold px-1.5"
-                        style="color: var(--color-error);"
-                        data-clock-id="${clock.id}"
-                        title="Supprimer">
-                    ✕
-                </button>
-            </div>
-        `;
-
-        // Ajouter un gestionnaire d'événement pour le bouton de suppression
-        const removeBtn = card.querySelector('.btn-remove-clock');
-        removeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.removeClock(clock.id);
-        });
-
-        container.appendChild(card);
-
-        // Mettre à jour le compteur de devices
-        this.updateDeviceCount();
-    }
-
-    /**
      * Met à jour le compteur de devices
      */
     updateDeviceCount() {
-        const countElement = document.getElementById('device-count');
-        if (countElement) {
-            countElement.textContent = this.simulation.clocks.length;
-        }
+        const deviceCountSpans = document.querySelectorAll('#device-count');
+        deviceCountSpans.forEach(span => {
+            span.textContent = this.simulation.clocks.length;
+        });
+    }
+
+    /**
+     * renderClockCard n'est plus utilisé - les devices sont affichés dans la topologie visuelle
+     * Cette fonction est conservée pour compatibilité mais ne fait rien
+     */
+    renderClockCard(clock) {
+        // No-op: Les devices sont maintenant affichés uniquement dans la topologie visuelle
     }
 
     /**
@@ -244,18 +212,6 @@ class UIManager {
      */
     selectClock(clock) {
         this.selectedClock = clock;
-
-        // Mettre en surbrillance la carte sélectionnée
-        document.querySelectorAll('.clock-card').forEach(card => {
-            card.style.borderColor = 'transparent';
-            card.style.backgroundColor = '';
-        });
-
-        const selectedCard = document.getElementById(`clock-card-${clock.id}`);
-        if (selectedCard) {
-            selectedCard.style.borderColor = 'var(--color-primary)';
-            selectedCard.style.backgroundColor = 'var(--bg-tertiary)';
-        }
 
         // Afficher le panneau de configuration
         this.renderConfigPanel(clock);
@@ -568,54 +524,7 @@ class UIManager {
      * Met à jour l'affichage d'une carte d'horloge COMPACTE
      */
     updateClockCard(clock) {
-        const card = document.getElementById(`clock-card-${clock.id}`);
-        if (!card) return;
-
-        const isSelected = this.selectedClock && this.selectedClock.id === clock.id;
-
-        // Utiliser le même format compact que renderClockCard()
-        card.innerHTML = `
-            <div class="flex items-center justify-between gap-2">
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-1">
-                        <span class="text-sm font-bold truncate" style="color: var(--text-primary);" title="${clock.id}">${this.getClockIcon(clock)} ${clock.id}</span>
-                        <span class="text-xs px-1 rounded" style="background-color: var(--bg-tertiary); color: var(--text-secondary);">v${clock.version}</span>
-                    </div>
-                    <div class="text-xs mt-0.5" style="color: var(--text-tertiary);">
-                        <span id="clock-state-${clock.id}" style="${this.getStateColor(clock.state)}">${clock.state}</span>
-                        <span style="color: var(--text-muted);"> • D${clock.domain}</span>
-                    </div>
-                </div>
-                <button class="btn-remove-clock text-sm font-bold px-1.5"
-                        style="color: var(--color-error);"
-                        data-clock-id="${clock.id}"
-                        title="Supprimer">
-                    ✕
-                </button>
-            </div>
-        `;
-
-        // Ré-attacher le gestionnaire d'événement pour le bouton de suppression
-        const newRemoveBtn = card.querySelector('.btn-remove-clock');
-        newRemoveBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.removeClock(clock.id);
-        });
-
-        // Mettre en évidence la carte du Grandmaster
-        if (clock.state === ClockState.MASTER) {
-            card.style.borderColor = 'var(--color-master)';
-            card.style.backgroundColor = 'var(--bg-tertiary)';
-            card.classList.add('shadow-lg');
-        } else {
-            card.classList.remove('shadow-lg');
-            if (!isSelected) {
-                card.style.borderColor = 'var(--border-color)';
-                card.style.backgroundColor = 'var(--bg-primary)';
-            }
-        }
-
-        // Mettre à jour la topologie visuelle
+        // Mettre à jour uniquement la topologie visuelle (les cartes n'existent plus)
         if (this.topology) {
             this.topology.updateNode(clock);
         }
@@ -808,9 +717,8 @@ class UIManager {
             }
         }
 
-        // Supprimer toutes les cartes
-        document.getElementById('topology-container').innerHTML = '';
-        document.getElementById('config-panel').innerHTML = '<p class="text-gray-500 text-center mt-8">Sélectionnez une horloge pour la configurer</p>';
+        // Réinitialiser les panneaux
+        document.getElementById('config-panel').innerHTML = '<p class="text-center mt-8" style="color: var(--text-tertiary);">Cliquez sur un node dans la topologie pour configurer</p>';
         document.getElementById('log-panel').innerHTML = '';
         document.getElementById('explanation-panel').innerHTML = '';
 
@@ -828,6 +736,9 @@ class UIManager {
         this.simulation.reset();
         this.selectedClock = null;
         this.clockCounter = { OC: 0, BC: 0, TC: 0 };
+
+        // Mettre à jour le compteur de devices
+        this.updateDeviceCount();
 
         this.showNotification('Topologie réinitialisée', 'info');
     }
