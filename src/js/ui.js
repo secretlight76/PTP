@@ -70,22 +70,44 @@ class UIManager {
      * Initialise les écouteurs d'événements
      */
     initializeEventListeners() {
-        // Boutons d'ajout d'horloges
-        document.getElementById('btn-add-oc').addEventListener('click', () => this.addClock(ClockType.ORDINARY_CLOCK));
-        document.getElementById('btn-add-gm-gps').addEventListener('click', () => this.addClock(ClockType.GRANDMASTER_GPS));
-        document.getElementById('btn-add-gm-atomic').addEventListener('click', () => this.addClock(ClockType.GRANDMASTER_ATOMIC));
-        document.getElementById('btn-add-bc').addEventListener('click', () => this.addClock(ClockType.BOUNDARY_CLOCK));
-        document.getElementById('btn-add-tc-p2p').addEventListener('click', () => this.addClock(ClockType.TRANSPARENT_CLOCK_P2P));
-        document.getElementById('btn-add-tc-e2e').addEventListener('click', () => this.addClock(ClockType.TRANSPARENT_CLOCK_E2E));
+        // Boutons d'ajout d'horloges - avec vérification défensive
+        const btnAddOC = document.getElementById('btn-add-oc');
+        const btnAddGmGps = document.getElementById('btn-add-gm-gps');
+        const btnAddGmAtomic = document.getElementById('btn-add-gm-atomic');
+        const btnAddBC = document.getElementById('btn-add-bc');
+        const btnAddTcP2P = document.getElementById('btn-add-tc-p2p');
+        const btnAddTcE2E = document.getElementById('btn-add-tc-e2e');
+
+        if (btnAddOC) btnAddOC.addEventListener('click', () => this.addClock(ClockType.ORDINARY_CLOCK));
+        if (btnAddGmGps) btnAddGmGps.addEventListener('click', () => this.addClock(ClockType.GRANDMASTER_GPS));
+        if (btnAddGmAtomic) btnAddGmAtomic.addEventListener('click', () => this.addClock(ClockType.GRANDMASTER_ATOMIC));
+        if (btnAddBC) btnAddBC.addEventListener('click', () => this.addClock(ClockType.BOUNDARY_CLOCK));
+        if (btnAddTcP2P) btnAddTcP2P.addEventListener('click', () => this.addClock(ClockType.TRANSPARENT_CLOCK_P2P));
+        if (btnAddTcE2E) btnAddTcE2E.addEventListener('click', () => this.addClock(ClockType.TRANSPARENT_CLOCK_E2E));
+
+        console.log('[PTP] Device buttons initialized:', {
+            OC: !!btnAddOC,
+            GM_GPS: !!btnAddGmGps,
+            GM_Atomic: !!btnAddGmAtomic,
+            BC: !!btnAddBC,
+            TC_P2P: !!btnAddTcP2P,
+            TC_E2E: !!btnAddTcE2E
+        });
 
         // Boutons de simulation
-        document.getElementById('btn-run-bmca').addEventListener('click', () => this.runBMCASimulation());
-        document.getElementById('btn-run-sync').addEventListener('click', () => this.runSynchronization());
-        document.getElementById('btn-reset-states').addEventListener('click', () => this.resetStates());
-        document.getElementById('btn-reset').addEventListener('click', () => this.resetSimulation());
+        const btnRunBMCA = document.getElementById('btn-run-bmca');
+        const btnRunSync = document.getElementById('btn-run-sync');
+        const btnResetStates = document.getElementById('btn-reset-states');
+        const btnReset = document.getElementById('btn-reset');
+
+        if (btnRunBMCA) btnRunBMCA.addEventListener('click', () => this.runBMCASimulation());
+        if (btnRunSync) btnRunSync.addEventListener('click', () => this.runSynchronization());
+        if (btnResetStates) btnResetStates.addEventListener('click', () => this.resetStates());
+        if (btnReset) btnReset.addEventListener('click', () => this.resetSimulation());
 
         // Bouton de sauvegarde de configuration
-        document.getElementById('btn-save-config').addEventListener('click', () => this.saveClockConfiguration());
+        const btnSaveConfig = document.getElementById('btn-save-config');
+        if (btnSaveConfig) btnSaveConfig.addEventListener('click', () => this.saveClockConfiguration());
 
         // Nouveaux boutons
         const btnTutorial = document.getElementById('btn-tutorial');

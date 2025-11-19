@@ -5,73 +5,73 @@
 
 /* ========== Variables de Thème ========== */
 :root {
-    /* Mode Clair */
+    /* Mode Clair - Palette Pastel Douce */
     --bg-primary: #ffffff;
-    --bg-secondary: #f8fafc;
-    --bg-tertiary: #f1f5f9;
-    --bg-accent: #e2e8f0;
+    --bg-secondary: #fafbfc;
+    --bg-tertiary: #f3f5f7;
+    --bg-accent: #e8ecf1;
 
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-tertiary: #64748b;
-    --text-muted: #94a3b8;
+    --text-primary: #2d3748;
+    --text-secondary: #4a5568;
+    --text-tertiary: #718096;
+    --text-muted: #a0aec0;
 
     --border-color: #e2e8f0;
     --border-hover: #cbd5e1;
 
-    /* Couleurs fonctionnelles - palette technique */
-    --color-primary: #2563eb;
-    --color-primary-hover: #1d4ed8;
-    --color-success: #059669;
-    --color-warning: #d97706;
-    --color-error: #dc2626;
-    --color-info: #0891b2;
+    /* Couleurs fonctionnelles - Palette Pastel */
+    --color-primary: #6b9bd1;        /* Bleu pastel doux */
+    --color-primary-hover: #5a8ac4;
+    --color-success: #7db89a;        /* Vert pastel apaisant */
+    --color-warning: #d9a66f;        /* Orange/pêche pastel */
+    --color-error: #d88e8e;          /* Rouge/rose pastel */
+    --color-info: #73b9ce;           /* Cyan pastel */
 
-    /* Couleurs PTP spécifiques */
-    --color-master: #ca8a04;
-    --color-slave: #2563eb;
-    --color-passive: #7c3aed;
-    --color-disabled: #6b7280;
+    /* Couleurs PTP spécifiques - Pastel */
+    --color-master: #c9a96e;         /* Or pastel doux */
+    --color-slave: #7ba3d4;          /* Bleu ciel pastel */
+    --color-passive: #a98fcc;        /* Lavande pastel */
+    --color-disabled: #9ca3af;
 
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    /* Shadows - Plus douces */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+    --shadow-md: 0 3px 5px -1px rgb(0 0 0 / 0.08);
+    --shadow-lg: 0 8px 12px -3px rgb(0 0 0 / 0.08);
+    --shadow-xl: 0 15px 20px -5px rgb(0 0 0 / 0.08);
 }
 
 [data-theme="dark"] {
-    /* Mode Sombre */
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-tertiary: #334155;
-    --bg-accent: #475569;
+    /* Mode Sombre - Amélioré pour Lisibilité */
+    --bg-primary: #1a2332;           /* Plus clair que #0f172a */
+    --bg-secondary: #243447;         /* Plus clair que #1e293b */
+    --bg-tertiary: #2f4156;          /* Plus clair que #334155 */
+    --bg-accent: #3d5266;            /* Plus clair que #475569 */
 
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --text-tertiary: #94a3b8;
-    --text-muted: #64748b;
+    --text-primary: #f7fafc;         /* Blanc très légèrement teinté */
+    --text-secondary: #e2e8f0;       /* Gris très clair */
+    --text-tertiary: #cbd5e1;        /* Gris clair */
+    --text-muted: #94a3b8;
 
-    --border-color: #334155;
-    --border-hover: #475569;
+    --border-color: #3d5266;         /* Bordures plus visibles */
+    --border-hover: #4a5f78;
 
-    /* Les couleurs fonctionnelles restent vives en mode sombre */
-    --color-primary: #3b82f6;
-    --color-primary-hover: #2563eb;
-    --color-success: #10b981;
-    --color-warning: #f59e0b;
-    --color-error: #ef4444;
-    --color-info: #06b6d4;
+    /* Couleurs fonctionnelles - Pastel pour dark mode */
+    --color-primary: #7ea9dd;        /* Bleu pastel lumineux */
+    --color-primary-hover: #6b9bd1;
+    --color-success: #88c9a8;        /* Vert pastel lumineux */
+    --color-warning: #e3b882;        /* Orange pastel lumineux */
+    --color-error: #e09d9d;          /* Rose pastel lumineux */
+    --color-info: #85c9dc;           /* Cyan pastel lumineux */
 
-    --color-master: #eab308;
-    --color-slave: #3b82f6;
-    --color-passive: #8b5cf6;
+    --color-master: #d4b97d;         /* Or pastel lumineux */
+    --color-slave: #88b3e0;          /* Bleu ciel pastel lumineux */
+    --color-passive: #b8a3d9;        /* Lavande pastel lumineux */
     --color-disabled: #9ca3af;
 
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5);
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.25);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.35);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.35);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4);
 }
 
 /* ========== Styles Globaux ========== */
@@ -79,6 +79,21 @@ body {
     background-color: var(--bg-secondary);
     color: var(--text-primary);
     transition: background-color 0.3s ease, color 0.3s ease;
+    font-family: 'Roboto Mono', 'Monaco', 'Courier New', monospace;
+    font-weight: 500;
+}
+
+/* Headings avec police technique */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Roboto Mono', 'Monaco', 'Courier New', monospace;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+/* Boutons avec police technique */
+button {
+    font-family: 'Roboto Mono', 'Monaco', 'Courier New', monospace;
+    font-weight: 600;
 }
 
 /* ========== Sliders Techniques ========== */
@@ -128,7 +143,7 @@ input[type="range"].slider::-moz-range-thumb:hover {
 /* ========== Cartes d'Horloges ========== */
 .clock-card {
     background-color: var(--bg-primary);
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--border-color);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: var(--shadow-sm);
 }
@@ -142,7 +157,7 @@ input[type="range"].slider::-moz-range-thumb:hover {
 /* ========== Panels ========== */
 .panel {
     background-color: var(--bg-primary);
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--border-color);
     box-shadow: var(--shadow-md);
 }
 
@@ -226,12 +241,14 @@ input[type="range"].slider::-moz-range-thumb:hover {
 /* ========== Boutons ========== */
 button {
     transition: all 0.2s ease;
-    font-weight: 500;
+    font-weight: 700;
+    border: 2px solid transparent;
 }
 
 button:hover:not(:disabled) {
     filter: brightness(0.9);
     box-shadow: var(--shadow-md);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
 button:active:not(:disabled) {
