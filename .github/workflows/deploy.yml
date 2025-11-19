@@ -1,11 +1,10 @@
-name: Deploy to Cloudflare Pages
+name: Deploy to Cloudflare Pages (Production Only)
 
 on:
   push:
     branches:
       - main
       - master
-  pull_request:
 
 jobs:
   deploy:
@@ -27,12 +26,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Publish to Cloudflare Pages
+      - name: Publish to Cloudflare Pages (Production)
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: simulateur-ptp
           directory: public
-          # Optional: Enable Comments on Pull Requests
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+          # Production deployment only - no previews
+          wranglerVersion: '3'
