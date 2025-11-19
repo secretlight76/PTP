@@ -5,73 +5,73 @@
 
 /* ========== Variables de Thème ========== */
 :root {
-    /* Mode Clair - Palette Pastel Douce */
-    --bg-primary: #ffffff;
-    --bg-secondary: #fafbfc;
-    --bg-tertiary: #f3f5f7;
-    --bg-accent: #e8ecf1;
+    /* Mode Clair - Palette avec Caractère */
+    --bg-primary: #f8f9fc;           /* Bleu-gris très clair */
+    --bg-secondary: #e8edf5;         /* Bleu-gris clair */
+    --bg-tertiary: #d4dbe8;          /* Bleu-gris moyen */
+    --bg-accent: #c1cce0;
 
-    --text-primary: #2d3748;
-    --text-secondary: #4a5568;
-    --text-tertiary: #718096;
-    --text-muted: #a0aec0;
+    --text-primary: #1a2332;         /* Bleu très foncé, presque noir */
+    --text-secondary: #2d3e54;       /* Bleu foncé */
+    --text-tertiary: #4a5f78;        /* Bleu moyen */
+    --text-muted: #6b7f99;
 
-    --border-color: #e2e8f0;
-    --border-hover: #cbd5e1;
+    --border-color: #b8c5d9;         /* Bordures visibles */
+    --border-hover: #9babc4;
 
-    /* Couleurs fonctionnelles - Palette Pastel */
-    --color-primary: #6b9bd1;        /* Bleu pastel doux */
-    --color-primary-hover: #5a8ac4;
-    --color-success: #7db89a;        /* Vert pastel apaisant */
-    --color-warning: #d9a66f;        /* Orange/pêche pastel */
-    --color-error: #d88e8e;          /* Rouge/rose pastel */
-    --color-info: #73b9ce;           /* Cyan pastel */
+    /* Couleurs fonctionnelles - Vives et caractérisées */
+    --color-primary: #4a7bb8;        /* Bleu vif */
+    --color-primary-hover: #3d6aa3;
+    --color-success: #52a876;        /* Vert vif */
+    --color-warning: #d49954;        /* Orange vif */
+    --color-error: #d65d5d;          /* Rouge vif */
+    --color-info: #4fa8c5;           /* Cyan vif */
 
-    /* Couleurs PTP spécifiques - Pastel */
-    --color-master: #c9a96e;         /* Or pastel doux */
-    --color-slave: #7ba3d4;          /* Bleu ciel pastel */
-    --color-passive: #a98fcc;        /* Lavande pastel */
-    --color-disabled: #9ca3af;
+    /* Couleurs PTP spécifiques */
+    --color-master: #c39c3f;         /* Or vif */
+    --color-slave: #5b8fcf;          /* Bleu ciel vif */
+    --color-passive: #9b7bc7;        /* Lavande vif */
+    --color-disabled: #8893a5;
 
-    /* Shadows - Plus douces */
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04);
-    --shadow-md: 0 3px 5px -1px rgb(0 0 0 / 0.08);
-    --shadow-lg: 0 8px 12px -3px rgb(0 0 0 / 0.08);
-    --shadow-xl: 0 15px 20px -5px rgb(0 0 0 / 0.08);
+    /* Shadows */
+    --shadow-sm: 0 1px 3px 0 rgb(26 35 50 / 0.12);
+    --shadow-md: 0 4px 8px -2px rgb(26 35 50 / 0.16);
+    --shadow-lg: 0 10px 20px -5px rgb(26 35 50 / 0.18);
+    --shadow-xl: 0 20px 30px -8px rgb(26 35 50 / 0.22);
 }
 
 [data-theme="dark"] {
-    /* Mode Sombre - Amélioré pour Lisibilité */
-    --bg-primary: #1a2332;           /* Plus clair que #0f172a */
-    --bg-secondary: #243447;         /* Plus clair que #1e293b */
-    --bg-tertiary: #2f4156;          /* Plus clair que #334155 */
-    --bg-accent: #3d5266;            /* Plus clair que #475569 */
+    /* Mode Sombre - Excellent Contraste */
+    --bg-primary: #2a3544;           /* Gris-bleu moyen */
+    --bg-secondary: #1f2937;         /* Gris-bleu foncé */
+    --bg-tertiary: #374151;          /* Gris-bleu plus clair */
+    --bg-accent: #4b5563;
 
-    --text-primary: #f7fafc;         /* Blanc très légèrement teinté */
-    --text-secondary: #e2e8f0;       /* Gris très clair */
-    --text-tertiary: #cbd5e1;        /* Gris clair */
-    --text-muted: #94a3b8;
+    --text-primary: #f9fafb;         /* Blanc presque pur */
+    --text-secondary: #e5e7eb;       /* Gris très très clair */
+    --text-tertiary: #d1d5db;        /* Gris très clair */
+    --text-muted: #9ca3af;           /* Gris clair */
 
-    --border-color: #3d5266;         /* Bordures plus visibles */
-    --border-hover: #4a5f78;
+    --border-color: #4b5563;         /* Bordures bien visibles */
+    --border-hover: #6b7280;
 
-    /* Couleurs fonctionnelles - Pastel pour dark mode */
-    --color-primary: #7ea9dd;        /* Bleu pastel lumineux */
-    --color-primary-hover: #6b9bd1;
-    --color-success: #88c9a8;        /* Vert pastel lumineux */
-    --color-warning: #e3b882;        /* Orange pastel lumineux */
-    --color-error: #e09d9d;          /* Rose pastel lumineux */
-    --color-info: #85c9dc;           /* Cyan pastel lumineux */
+    /* Couleurs fonctionnelles - Lumineuses pour dark mode */
+    --color-primary: #60a5fa;        /* Bleu lumineux */
+    --color-primary-hover: #3b82f6;
+    --color-success: #34d399;        /* Vert lumineux */
+    --color-warning: #fbbf24;        /* Jaune/orange lumineux */
+    --color-error: #f87171;          /* Rouge lumineux */
+    --color-info: #22d3ee;           /* Cyan lumineux */
 
-    --color-master: #d4b97d;         /* Or pastel lumineux */
-    --color-slave: #88b3e0;          /* Bleu ciel pastel lumineux */
-    --color-passive: #b8a3d9;        /* Lavande pastel lumineux */
-    --color-disabled: #9ca3af;
+    --color-master: #fbbf24;         /* Or brillant */
+    --color-slave: #60a5fa;          /* Bleu brillant */
+    --color-passive: #a78bfa;        /* Violet brillant */
+    --color-disabled: #6b7280;
 
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.25);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.35);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.35);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4);
+    --shadow-md: 0 4px 8px -2px rgb(0 0 0 / 0.5);
+    --shadow-lg: 0 10px 20px -5px rgb(0 0 0 / 0.5);
+    --shadow-xl: 0 20px 30px -8px rgb(0 0 0 / 0.6);
 }
 
 /* ========== Styles Globaux ========== */
