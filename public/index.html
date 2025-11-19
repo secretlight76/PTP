@@ -101,7 +101,7 @@
             <div id="network-topology-section" class="collapsible-content">
                 <div class="content-inner">
                     <!-- Layout 3 colonnes: sidebar | canvas | config -->
-                    <div style="display: flex; gap: 8px;">
+                    <div style="display: flex; gap: 8px; align-items: stretch; min-height: 500px;">
                         <!-- Sidebar gauche: Boutons d'ajout verticaux (réduit à 80px) -->
                         <div style="width: 80px; flex-shrink: 0; background: var(--bg-tertiary); border: 2px solid var(--border-color); border-radius: 6px; padding: 6px;">
                             <h3 style="margin: 0 0 6px 0; font-size: 10px; font-weight: 700; color: var(--text-primary); font-family: 'Roboto Mono', 'Courier New', monospace; text-align: center;">
@@ -142,12 +142,12 @@
                         </div>
 
                         <!-- Canvas de visualisation -->
-                        <div style="flex: 1; min-height: 500px; background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 6px; padding: 6px;">
+                        <div style="flex: 1; background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 6px; padding: 6px;">
                             <div id="network-topology-container" style="width: 100%; height: 100%;"></div>
                         </div>
 
                         <!-- Config panel à droite (compact) -->
-                        <div style="width: 280px; min-height: 500px; flex-shrink: 0; background: var(--bg-primary); border: 2px solid var(--border-color); border-radius: 6px; padding: 8px; display: flex; flex-direction: column;">
+                        <div style="width: 280px; flex-shrink: 0; background: var(--bg-primary); border: 2px solid var(--border-color); border-radius: 6px; padding: 8px; display: flex; flex-direction: column;">
                             <h3 style="margin: 0 0 8px 0; font-size: 11px; font-weight: 700; color: var(--text-primary); font-family: 'Roboto Mono', 'Courier New', monospace; padding-bottom: 4px; border-bottom: 2px solid var(--color-passive); flex-shrink: 0;">
                                 ⚙️ Config
                             </h3>
