@@ -2,15 +2,12 @@ name = "simulateur-ptp"
 compatibility_date = "2024-01-01"
 
 # Configuration pour Cloudflare Pages
-pages_build_output_dir = "dist"
+pages_build_output_dir = "public"
 
-# Production branch - toujours déployer sur cette branche
+# Production uniquement - pas de previews
 [env.production]
 name = "simulateur-ptp-production"
 route = { pattern = "simulateur-ptp.pages.dev", custom_domain = false }
-
-[env.preview]
-name = "simulateur-ptp-preview"
 
 # Variables d'environnement
 [vars]
