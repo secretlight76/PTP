@@ -1,11 +1,11 @@
-name: Deploy to Cloudflare Pages (Production Only)
+name: Deploy to Cloudflare Pages
 
 on:
   push:
     branches:
       - main
       - master
-      - claude/improve-ptp-educational-tool-01Ah5W4e2tSBx4y7oXtUpqrP
+      - 'claude/**'
 
 jobs:
   deploy:
@@ -18,12 +18,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Publish to Cloudflare Pages (Production)
+      - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: simulateur-ptp
           directory: public
-          # Production deployment only - no previews
           wranglerVersion: '3'
