@@ -34,6 +34,5 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: simulateur-ptp
           directory: public
-          branch: main
           # Production deployment only - no previews
           wranglerVersion: '3'
