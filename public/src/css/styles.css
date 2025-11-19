@@ -19,19 +19,19 @@
     --border-color: #b8c5d9;         /* Bordures visibles */
     --border-hover: #9babc4;
 
-    /* Couleurs fonctionnelles - Vives et caractérisées */
-    --color-primary: #4a7bb8;        /* Bleu vif */
-    --color-primary-hover: #3d6aa3;
-    --color-success: #52a876;        /* Vert vif */
-    --color-warning: #d49954;        /* Orange vif */
-    --color-error: #d65d5d;          /* Rouge vif */
-    --color-info: #4fa8c5;           /* Cyan vif */
+    /* Couleurs fonctionnelles - Assombries pour contraste avec texte blanc */
+    --color-primary: #3d5f8f;        /* Bleu foncé */
+    --color-primary-hover: #2f4a6d;
+    --color-success: #3d8557;        /* Vert foncé */
+    --color-warning: #b5733a;        /* Orange foncé */
+    --color-error: #b33939;          /* Rouge foncé */
+    --color-info: #3b8aa3;           /* Cyan foncé */
 
-    /* Couleurs PTP spécifiques */
-    --color-master: #c39c3f;         /* Or vif */
-    --color-slave: #5b8fcf;          /* Bleu ciel vif */
-    --color-passive: #9b7bc7;        /* Lavande vif */
-    --color-disabled: #8893a5;
+    /* Couleurs PTP spécifiques - Assombries pour contraste */
+    --color-master: #9d7730;         /* Or foncé */
+    --color-slave: #4672a8;          /* Bleu ciel foncé */
+    --color-passive: #7a5ea3;        /* Lavande foncé */
+    --color-disabled: #6a7585;
 
     /* Shadows */
     --shadow-sm: 0 1px 3px 0 rgb(26 35 50 / 0.12);
@@ -262,10 +262,11 @@ button:disabled {
 
 /* ========== Theme Toggle ========== */
 .theme-toggle {
-    position: fixed !important;
-    top: 20px;
-    right: 20px;
-    z-index: 10002 !important;
+    position: absolute;
+    top: 50%;
+    right: 80px;
+    transform: translateY(-50%);
+    z-index: 100;
     background-color: var(--bg-primary);
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -273,12 +274,17 @@ button:disabled {
     cursor: pointer;
     box-shadow: var(--shadow-md);
     transition: all 0.2s ease;
-    transform: translateZ(0);
 }
 
 .theme-toggle:hover {
     box-shadow: var(--shadow-lg);
     border-color: var(--color-primary);
+}
+
+/* ========== Button Text Color Fix ========== */
+/* Force white text on buttons regardless of theme */
+button[style*="background-color: var(--color-"] {
+    color: white !important;
 }
 
 /* ========== Animations ========== */
