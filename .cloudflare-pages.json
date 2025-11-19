@@ -1,9 +1,9 @@
 {
   "project_name": "simulateur-ptp",
-  "production_branch": "main",
+  "production_branch": "claude/ptp-simulator-app-01JQmZUm3g1Jy8tSJiv6DCCb",
   "build": {
-    "command": "",
-    "output_directory": "public"
+    "command": "npm run build",
+    "output_directory": "dist"
   },
   "deployment": {
     "compatibility_date": "2024-01-01"
