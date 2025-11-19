@@ -158,10 +158,8 @@ class NetworkTopology {
         // Delete button click handler
         deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (confirm(`Supprimer ${clock.id} de la topologie ?`)) {
-                if (window.uiManager) {
-                    window.uiManager.removeClock(clock.id);
-                }
+            if (window.uiManager) {
+                window.uiManager.removeClock(clock.id);
             }
         });
 

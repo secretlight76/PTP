@@ -151,7 +151,7 @@
                             <h3 style="margin: 0 0 8px 0; font-size: 11px; font-weight: 700; color: var(--text-primary); font-family: 'Roboto Mono', 'Courier New', monospace; padding-bottom: 4px; border-bottom: 2px solid var(--color-passive);">
                                 ⚙️ Config
                             </h3>
-                            <div id="config-panel" class="overflow-y-auto pr-1" style="max-height: 460px;">
+                            <div id="config-panel" class="overflow-y-auto pr-1" style="max-height: 480px;">
                                 <p class="text-center mt-4" style="color: var(--text-tertiary); font-family: 'Roboto Mono', 'Courier New', monospace; font-size: 10px;">
                                     Clic node → config
                                 </p>
@@ -162,13 +162,25 @@
             </div>
         </div>
 
-        <!-- Grille à 1 colonne - Compact -->
-        <div class="grid grid-cols-1 gap-3">
+        <!-- Grille à 2 colonnes - Formules & Simulation -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+
+            <!-- ========== Formules Mathématiques ========== -->
+            <div class="rounded-lg shadow-lg p-4 panel glass-panel smooth-transition" style="border: 2px solid var(--border-color);">
+                <h2 class="text-xl font-bold mb-3 pb-2" style="color: var(--text-primary); border-bottom: 3px solid var(--color-info); font-family: 'Roboto Mono', 'Courier New', monospace;">
+                    📐 Formules Mathématiques
+                </h2>
+                <div id="math-formulas-container">
+                    <p class="text-center text-xs" style="color: var(--text-tertiary); padding: 20px;">
+                        Après simulation Sync
+                    </p>
+                </div>
+            </div>
 
             <!-- ========== Contrôles & Logs ========== -->
             <div class="rounded-lg shadow-lg p-4 panel glass-panel smooth-transition" style="border: 2px solid var(--border-color);">
                 <h2 class="text-xl font-bold mb-3 pb-2" style="color: var(--text-primary); border-bottom: 3px solid var(--color-success); font-family: 'Roboto Mono', 'Courier New', monospace;">
-                    Simulation & Logs
+                    🎮 Simulation & Logs
                 </h2>
 
                 <!-- Contrôles de simulation -->
@@ -239,41 +251,6 @@
                 </div>
             </div>
 
-        </div>
-
-        <!-- Performance Charts and Math Formulas - Collapsible -->
-        <div class="collapsible-section">
-            <div class="collapsible-header" onclick="toggleSection('performance-section')">
-                <h2 style="color: var(--text-primary); margin: 0;">
-                    📊 Graphiques & Formules
-                </h2>
-                <span id="performance-toggle" style="color: var(--text-tertiary);">▼</span>
-            </div>
-            <div id="performance-section" class="collapsible-content collapsed">
-                <div class="content-inner">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <!-- Performance Charts -->
-                        <div>
-                            <h3 class="font-bold mb-2" style="color: var(--color-success);">Graphiques de Performance</h3>
-                            <div id="performance-charts-container">
-                                <p class="text-center text-xs" style="color: var(--text-tertiary); padding: 20px;">
-                                    Lancez une synchronisation
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Math Formulas -->
-                        <div>
-                            <h3 class="font-bold mb-2" style="color: var(--color-info);">Formules Mathématiques</h3>
-                            <div id="math-formulas-container">
-                                <p class="text-center text-xs" style="color: var(--text-tertiary); padding: 20px;">
-                                    Après simulation Sync
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Section pédagogique - Collapsible -->
