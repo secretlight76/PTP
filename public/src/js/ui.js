@@ -1196,19 +1196,11 @@ class UIManager {
     loadScenario(scenarioKey) {
         try {
             const scenario = ConfigManager.loadScenario(scenarioKey, this.simulation, this);
-
-            // Mettre à jour la topologie visuelle
-            if (this.topology) {
-                this.topology.clear();
-                this.simulation.clocks.forEach(clock => {
-                    this.topology.addClock(clock);
-                });
-            }
-
             this.showNotification(`Scénario "${scenario.name}" chargé avec succès !`, 'success');
+            console.log('[PTP] Scénario chargé:', scenario.name, '- Horloges:', this.simulation.clocks.length);
         } catch (error) {
             this.showNotification('Erreur lors du chargement du scénario', 'error');
-            console.error(error);
+            console.error('[PTP] Erreur chargement scénario:', error);
         }
     }
 

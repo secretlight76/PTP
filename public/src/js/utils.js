@@ -161,16 +161,41 @@ class ConfigManager {
 
         // Clear current simulation
         simulation.reset();
-        document.getElementById('topology-container').innerHTML = '';
-        document.getElementById('config-panel').innerHTML = '<p class="text-gray-500 text-center mt-8">Sélectionnez une horloge pour la configurer</p>';
+
+        // Clear topology visuelle
+        const topoContainer = document.getElementById('network-topology-container');
+        if (topoContainer) {
+            topoContainer.innerHTML = '';
+        }
+
+        // Clear config panel
+        const configPanel = document.getElementById('config-panel');
+        if (configPanel) {
+            configPanel.innerHTML = '<p class="text-center" style="color: var(--text-tertiary); font-family: \'Roboto Mono\', monospace; font-size: 10px; margin-top: 12px;">Clic node → config</p>';
+        }
+
+        // Clear topology if it exists
+        if (uiManager.topology) {
+            uiManager.topology.clear();
+        }
 
         // Create clocks from scenario
         scenario.clocks.forEach(clockData => {
             const clock = new PTPClock(clockData.id, clockData.type, clockData.version);
             Object.assign(clock, clockData);
             simulation.addClock(clock);
-            uiManager.renderClockCard(clock);
+
+            // Add to topology visuelle
+            if (uiManager.topology) {
+                uiManager.topology.addClock(clock);
+            }
         });
+
+        // Update device count
+        const deviceCount = document.getElementById('device-count');
+        if (deviceCount) {
+            deviceCount.textContent = simulation.clocks.length;
+        }
 
         return scenario;
     }
